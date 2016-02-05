@@ -4,8 +4,9 @@ CONFIG -= app_bundle
 CONFIG -= qt
 
 SOURCES += main.cpp
-#LIBS += -L/ lib -lSDL2 -lSDL2_image -lSDL2_ttf
-#INCLUDEPATH += /usr/include
+LIBS += -L/usr/lib -lSDL2 -lSDL2_image -lSDL2_ttf
+INCLUDEPATH += /usr/include
+
 
 
 win32:CONFIG(release, debug|release): LIBS += -L$$PWD/lib/ -lSDL2main

@@ -10,6 +10,8 @@ and may not be redistributed without written permission.*/
 #include <string>
 
 #include <iostream>
+#include <cstring>
+
 
 //Screen dimension constants
 const int SCREEN_WIDTH = 720*2;
@@ -19,8 +21,9 @@ TTF_Font *gFont;
 
 bool leftMouseButtonDown=false;
 const int WHITE=255;
+int windowId=-1;
 
-
+void handleEvent( SDL_Event& e );
 
 //Texture wrapper class
 class LTexture
@@ -79,6 +82,8 @@ class LTexture
         void* mPixels;
         void* mToolsPixels;
         int mPitch;
+        int mToolsPitch;
+
 
         //Image dimensions
         int mWidth;
@@ -100,7 +105,7 @@ SDL_Window* toolsWindow = NULL;
 
 //The window renderer
 SDL_Renderer* gRenderer = NULL;
-SDL_Renderer* gRendererTools = NULL;
+SDL_Renderer* gRenderer2 = NULL;
 
 
 //Scene textures
@@ -114,7 +119,9 @@ LTexture::LTexture()
     mWidth = 0;
     mHeight = 0;
     mPixels = NULL;
+    mToolsPixels = NULL;
     mPitch = 0;
+    mToolsPitch = 0;
 }
 
 LTexture::~LTexture()
@@ -203,9 +210,9 @@ bool LTexture::loadTexture()
         {
             //Create blank streamable texture
             newTexture = SDL_CreateTexture( gRenderer,SDL_GetWindowPixelFormat( gWindow ), SDL_TEXTUREACCESS_STREAMING, SCREEN_WIDTH, SCREEN_HEIGHT );
-            toolsTexture = SDL_CreateTexture( gRenderer,SDL_GetWindowPixelFormat( gWindow ), SDL_TEXTUREACCESS_STREAMING, 100, 100 );
+            toolsTexture = SDL_CreateTexture( gRenderer2,SDL_GetWindowPixelFormat( toolsWindow ), SDL_TEXTUREACCESS_STREAMING, 200, 200 );
 
-            if( newTexture == NULL )
+            if( newTexture == NULL || toolsTexture == NULL)
             {
                 printf( "Unable to create blank texture! SDL Error: %s\n", SDL_GetError() );
             }
@@ -213,15 +220,15 @@ bool LTexture::loadTexture()
             {
                 //Lock texture for manipulation
                 SDL_LockTexture( newTexture, NULL, &mPixels, &mPitch );
-                SDL_LockTexture( toolsTexture, NULL, &mToolsPixels, &mPitch );
+                SDL_LockTexture( toolsTexture, NULL, &mToolsPixels, &mToolsPitch );
 
 //                //Copy loaded/formatted surface pixels
 //                memcpy( mPixels, formattedSurface->pixels, formattedSurface->pitch * formattedSurface->h );
 
                 //set backgrounf to white
-                memset(mPixels, WHITE , SCREEN_WIDTH * SCREEN_HEIGHT * sizeof(Uint32));
+//                memset(mPixels, WHITE , SCREEN_WIDTH * SCREEN_HEIGHT * sizeof(Uint32));
 
-                memset(mToolsPixels, 0 , 100 * 100 * sizeof(Uint32));
+//                memset(mToolsPixels, 0 , 100 * 100 * sizeof(Uint32));
 
 
 
@@ -360,27 +367,27 @@ void LTexture::setAlpha( Uint8 alpha )
 
 void LTexture::render( int x, int y, SDL_Rect* clip, double angle, SDL_Point* center, SDL_RendererFlip flip )
 {
-    //Set rendering space and render to screen
-    SDL_Rect renderQuad = { x, y, mWidth, mHeight };
-    SDL_Rect renderQuad2 = { 0, 0, 100, 100 };
+//    //Set rendering space and render to screen
+//    SDL_Rect renderQuad = { x, y, mWidth, mHeight };
+//    SDL_Rect renderQuad2 = { 0, 0, 100, 100 };
 
-    //Set clip rendering dimensions
-    if( clip != NULL )
-    {
-        renderQuad.w = clip->w;
-        renderQuad.h = clip->h;
-    }
+//    //Set clip rendering dimensions
+//    if( clip != NULL )
+//    {
+//        renderQuad.w = clip->w;
+//        renderQuad.h = clip->h;
+//    }
 
-    //Render to screen
-    SDL_RenderCopyEx( gRenderer, mTexture, clip, &renderQuad, angle, center, flip );
+//    //Render to screen
+//    SDL_RenderCopyEx( gRenderer, mTexture, clip, &renderQuad, angle, center, flip );
 
-    if( clip != NULL )
-    {
-        renderQuad2.w = clip->w;
-        renderQuad2.h = clip->h;
-    }
+//    if( clip != NULL )
+//    {
+//        renderQuad2.w = clip->w;
+//        renderQuad2.h = clip->h;
+//    }
 
-    SDL_RenderCopyEx( gRendererTools, mToolsTexture, clip, &renderQuad2, angle, center, flip );
+//    SDL_RenderCopyEx( gRenderer, mToolsTexture, clip, &renderQuad2, angle, center, flip );
 
 }
 
@@ -469,8 +476,14 @@ bool init()
 
         //Create window
         gWindow = SDL_CreateWindow( "SDL Tutorial", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, 0 );
-        toolsWindow = SDL_CreateWindow( "Tool Box", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 100, 100, 0 );
-        if( gWindow == NULL )
+        //Grab window identifier
+        windowId = SDL_GetWindowID( gWindow );
+
+        toolsWindow = SDL_CreateWindow( "Tool Box", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 200, 200, 0 );
+        windowId = SDL_GetWindowID( toolsWindow );
+
+
+        if( gWindow == NULL || toolsWindow ==NULL)
         {
             printf( "Window could not be created! SDL Error: %s\n", SDL_GetError() );
             success = false;
@@ -480,8 +493,9 @@ bool init()
 
             //Create renderer for window
             gRenderer = SDL_CreateRenderer( gWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC );
-            gRendererTools = SDL_CreateRenderer( toolsWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC );
-            if( gRenderer == NULL || gRendererTools == NULL )
+            gRenderer2 = SDL_CreateRenderer( toolsWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC );
+//            gRendererTools = SDL_CreateRenderer( toolsWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC );
+            if( gRenderer == NULL  )
             {
                 printf( "Renderer could not be created! SDL Error: %s\n", SDL_GetError() );
                 success = false;
@@ -490,7 +504,7 @@ bool init()
             {
                 //Initialize renderer color
                 SDL_SetRenderDrawColor( gRenderer, 0xFF, 0xFF, 0xFF, 0xFF );
-                SDL_SetRenderDrawColor( gRendererTools, 0xFF, 0x00, 0x00, 0xFF );
+//                SDL_SetRenderDrawColor( gRendererTools, 0xFF, 0x00, 0x00, 0xFF );
 
                 //Initialize PNG loading
                 int imgFlags = IMG_INIT_PNG;
@@ -800,6 +814,160 @@ void close()
     SDL_Quit();
 }
 
+
+void handleEvent( SDL_Event& e )
+{
+    //If an event was detected for this window
+//    if( e.type == SDL_WINDOWEVENT && e.window.windowID == 2 )
+    {
+        //Caption update flag
+//        bool updateCaption = false;
+
+        switch( e.window.event )
+        {
+            //Window appeared
+            case SDL_WINDOWEVENT_SHOWN:
+//            mShown = true;
+            break;
+
+            //Window disappeared
+            case SDL_WINDOWEVENT_HIDDEN:
+//            mShown = false;
+            break;
+
+            //Get new dimensions and repaint
+            case SDL_WINDOWEVENT_SIZE_CHANGED:
+//            mWidth = e.window.data1;
+//            mHeight = e.window.data2;
+//            SDL_RenderPresent( gRenderer );
+//            SDL_RenderPresent( gRenderer2 );
+            break;
+
+            //Repaint on expose
+            case SDL_WINDOWEVENT_EXPOSED:
+//            SDL_RenderPresent( gRenderer );
+//            SDL_RenderPresent( gRenderer2 );
+            break;
+
+            //Mouse enter
+            case SDL_WINDOWEVENT_ENTER:
+//            mMouseFocus = true;
+//            updateCaption = true;
+            break;
+
+            //Mouse exit
+            case SDL_WINDOWEVENT_LEAVE:
+//            mMouseFocus = false;
+//            updateCaption = true;
+            break;
+
+            //Keyboard focus gained
+            case SDL_WINDOWEVENT_FOCUS_GAINED:
+//            mKeyboardFocus = true;
+//            updateCaption = true;
+            break;
+
+            //Keyboard focus lost
+            case SDL_WINDOWEVENT_FOCUS_LOST:
+//            mKeyboardFocus = false;
+//            updateCaption = true;
+            break;
+
+            //Window minimized
+            case SDL_WINDOWEVENT_MINIMIZED:
+//            mMinimized = true;
+            break;
+
+            //Window maxized
+            case SDL_WINDOWEVENT_MAXIMIZED:
+//            mMinimized = false;
+            break;
+
+            //Window restored
+            case SDL_WINDOWEVENT_RESTORED:
+//            mMinimized = false;
+            break;
+
+            //Hide on close
+            case SDL_WINDOWEVENT_CLOSE:
+//            SDL_HideWindow( gWindow );
+            break;
+        }
+
+        //Update window caption with new data
+//        if( updateCaption )
+        {
+//            std::stringstream caption;
+//            caption << "SDL Tutorial - ID: " << mWindowID << " MouseFocus:" << ( ( mMouseFocus ) ? "On" : "Off" ) << " KeyboardFocus:" << ( ( mKeyboardFocus ) ? "On" : "Off" );
+//            SDL_SetWindowTitle( mWindow, caption.str().c_str() );
+
+
+
+            if(e.window.windowID==2)
+            {
+//                SDL_SetRenderDrawColor( gRenderer, 0xFF, 0x00, 0xFF, 0x00 );
+
+               //Update Texture
+//               gFooTexture.render( ( SCREEN_WIDTH - gFooTexture.getWidth() ) / 2, ( SCREEN_HEIGHT - gFooTexture.getHeight() ) / 2 );
+
+               //Set rendering space and render to screen
+//               SDL_Rect renderQuad = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };
+
+
+               //Set clip rendering dimensions
+//               if( clip != NULL )
+//               {
+//                   renderQuad.w = clip->w;
+//                   renderQuad.h = clip->h;
+//               }
+
+               SDL_RenderClear( gRenderer );
+
+
+               SDL_Rect* clip = NULL; double angle = 0.0; SDL_Point* center = NULL; SDL_RendererFlip flip = SDL_FLIP_NONE;
+               //Render to screen
+               SDL_RenderCopyEx( gRenderer, gFooTexture.mTexture, NULL, NULL, angle, center, flip );
+
+               //Update screen
+               SDL_RenderPresent( gRenderer );
+
+            }
+            else
+            {
+//                SDL_SetRenderDrawColor( gRenderer, 0xFF, 0xFF, 0x00, 0x00 );
+
+                //Update Texture
+//                gFooTexture.render( ( SCREEN_WIDTH - gFooTexture.getWidth() ) / 2, ( SCREEN_HEIGHT - gFooTexture.getHeight() ) / 2 );
+
+
+                //Set clip rendering dimensions
+//                SDL_Rect renderQuad2 = { 0, 0, 100, 100 };
+//                if( clip != NULL )
+//                {
+//                    renderQuad2.w = clip->w;
+//                    renderQuad2.h = clip->h;
+//                }
+
+                SDL_RenderClear( gRenderer2 );
+
+
+                SDL_Rect* clip = NULL; double angle = 0.0; SDL_Point* center = NULL; SDL_RendererFlip flip = SDL_FLIP_NONE;
+                //Render to screen
+                SDL_RenderCopyEx( gRenderer2, gFooTexture.mToolsTexture, NULL, NULL, angle, center, flip );
+
+                //Update screen
+                SDL_RenderPresent( gRenderer2 );
+
+
+            }
+
+
+
+        }
+    }
+}
+
+
 int main( int argc, char* args[] )
 {
     //Start up SDL and create window
@@ -855,22 +1023,71 @@ int main( int argc, char* args[] )
                             int mouseX = e.motion.x;
                             int mouseY = e.motion.y;
 
+
+                            Uint32 drawcolor;
+                            Uint8 v = 255 + 255 +255;
+                            drawcolor = (0xFF << 24) | (v << 16) | (v << 8) | v;
+
+
                             //Texture pixels' modification
                             gFooTexture.lockTexture();
                             Uint32* pixels = (Uint32*)gFooTexture.getPixels();//formattedSurface->pixels;
-                            pixels[ (mouseY * SCREEN_WIDTH) + mouseX] = 0;
+                            pixels[ (mouseY * SCREEN_WIDTH) + mouseX] = drawcolor;
+
+
+                            handleEvent(e);
                             gFooTexture.unlockTexture();
+
+
                             break;
                         }
 
+
+                        const int TOTAL_WINDOWS=2;
+                        //////////////////////////////////////////////////////////
+                        //Handle window events
+                       // for( int i = 0; i < TOTAL_WINDOWS; ++i )
+                        {
+//                            gWindow.handleEvent( e );
+//                            toolsWindow.handleEvent( e );
+
+
+                        }
+
+
+                        //Update all windows
+                        for( int i = 0; i < TOTAL_WINDOWS; ++i )
+                        {
+//                            gWindow.render();
+//                            toolsWindow.render();
+//                            gFooTexture.render();
+
+//                            //Clear screen
+//                            SDL_RenderClear( gRenderer );
+//                            SDL_SetRenderDrawColor( gRenderer, 0xFF, 0xFF, 0xFF, 0xFF );
+
+//                            //Update Texture
+//                            gFooTexture.render( ( SCREEN_WIDTH - gFooTexture.getWidth() ) / 2, ( SCREEN_HEIGHT - gFooTexture.getHeight() ) / 2 );
+
+//                            //Update screen
+//                            SDL_RenderPresent( gRenderer );
+                        }
+                        //////////////////////////////////////////////////////////
+
+
+
+
+
+
+
+
                     }
 
-                    //Update Texture
-                    gFooTexture.render( ( SCREEN_WIDTH - gFooTexture.getWidth() ) / 2, ( SCREEN_HEIGHT - gFooTexture.getHeight() ) / 2 );
+//                    //Update Texture
+//                    gFooTexture.render( ( SCREEN_WIDTH - gFooTexture.getWidth() ) / 2, ( SCREEN_HEIGHT - gFooTexture.getHeight() ) / 2 );
 
-                    //Update screen
-                    SDL_RenderPresent( gRenderer );
-                    SDL_RenderPresent( gRendererTools );
+//                    //Update screen
+//                    SDL_RenderPresent( gRenderer );
                 }
 
 //                Clear screen
@@ -893,3 +1110,472 @@ int main( int argc, char* args[] )
 
     return 0;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+///*This source code copyrighted by Lazy Foo' Productions (2004-2015)
+//and may not be redistributed without written permission.*/
+
+////Using SDL, standard IO, strings, and string streams
+//#include <SDL.h>
+//#include <stdio.h>
+//#include <string>
+//#include <sstream>
+
+////Screen dimension constants
+//const int SCREEN_WIDTH = 640;
+//const int SCREEN_HEIGHT = 480;
+
+////Total windows
+//const int TOTAL_WINDOWS = 3;
+
+//class LWindow
+//{
+//    public:
+//        //Intializes internals
+//        LWindow();
+
+//        //Creates window
+//        bool init();
+
+//        //Handles window events
+//        void handleEvent( SDL_Event& e );
+
+//        //Focuses on window
+//        void focus();
+
+//        //Shows windows contents
+//        void render();
+
+//        //Deallocates internals
+//        void free();
+
+//        //Window dimensions
+//        int getWidth();
+//        int getHeight();
+
+//        //Window focii
+//        bool hasMouseFocus();
+//        bool hasKeyboardFocus();
+//        bool isMinimized();
+//        bool isShown();
+
+//    private:
+//        //Window data
+//        SDL_Window* mWindow;
+//        SDL_Renderer* mRenderer;
+//        int mWindowID;
+
+//        //Window dimensions
+//        int mWidth;
+//        int mHeight;
+
+//        //Window focus
+//        bool mMouseFocus;
+//        bool mKeyboardFocus;
+//        bool mFullScreen;
+//        bool mMinimized;
+//        bool mShown;
+//};
+
+////Starts up SDL and creates window
+//bool init();
+
+////Frees media and shuts down SDL
+//void close();
+
+////Our custom windows
+//LWindow gWindows[ TOTAL_WINDOWS ];
+
+//LWindow::LWindow()
+//{
+//    //Initialize non-existant window
+//    mWindow = NULL;
+//    mRenderer = NULL;
+
+//    mMouseFocus = false;
+//    mKeyboardFocus = false;
+//    mFullScreen = false;
+//    mShown = false;
+//    mWindowID = -1;
+
+//    mWidth = 0;
+//    mHeight = 0;
+//}
+
+//bool LWindow::init()
+//{
+//    //Create window
+//    mWindow = SDL_CreateWindow( "SDL Tutorial", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE );
+//    if( mWindow != NULL )
+//    {
+//        mMouseFocus = true;
+//        mKeyboardFocus = true;
+//        mWidth = SCREEN_WIDTH;
+//        mHeight = SCREEN_HEIGHT;
+
+//        //Create renderer for window
+//        mRenderer = SDL_CreateRenderer( mWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC );
+//        if( mRenderer == NULL )
+//        {
+//            printf( "Renderer could not be created! SDL Error: %s\n", SDL_GetError() );
+//            SDL_DestroyWindow( mWindow );
+//            mWindow = NULL;
+//        }
+//        else
+//        {
+//            //Initialize renderer color
+//            SDL_SetRenderDrawColor( mRenderer, 0xFF, 0xFF, 0xFF, 0xFF );
+
+//            //Grab window identifier
+//            mWindowID = SDL_GetWindowID( mWindow );
+
+//            //Flag as opened
+//            mShown = true;
+//        }
+//    }
+//    else
+//    {
+//        printf( "Window could not be created! SDL Error: %s\n", SDL_GetError() );
+//    }
+
+//    return mWindow != NULL && mRenderer != NULL;
+//}
+
+//void LWindow::handleEvent( SDL_Event& e )
+//{
+//    //If an event was detected for this window
+//    if( e.type == SDL_WINDOWEVENT && e.window.windowID == mWindowID )
+//    {
+//        //Caption update flag
+//        bool updateCaption = false;
+
+//        switch( e.window.event )
+//        {
+//            //Window appeared
+//            case SDL_WINDOWEVENT_SHOWN:
+//            mShown = true;
+//            break;
+
+//            //Window disappeared
+//            case SDL_WINDOWEVENT_HIDDEN:
+//            mShown = false;
+//            break;
+
+//            //Get new dimensions and repaint
+//            case SDL_WINDOWEVENT_SIZE_CHANGED:
+//            mWidth = e.window.data1;
+//            mHeight = e.window.data2;
+//            SDL_RenderPresent( mRenderer );
+//            break;
+
+//            //Repaint on expose
+//            case SDL_WINDOWEVENT_EXPOSED:
+//            SDL_RenderPresent( mRenderer );
+//            break;
+
+//            //Mouse enter
+//            case SDL_WINDOWEVENT_ENTER:
+//            mMouseFocus = true;
+//            updateCaption = true;
+//            break;
+
+//            //Mouse exit
+//            case SDL_WINDOWEVENT_LEAVE:
+//            mMouseFocus = false;
+//            updateCaption = true;
+//            break;
+
+//            //Keyboard focus gained
+//            case SDL_WINDOWEVENT_FOCUS_GAINED:
+//            mKeyboardFocus = true;
+//            updateCaption = true;
+//            break;
+
+//            //Keyboard focus lost
+//            case SDL_WINDOWEVENT_FOCUS_LOST:
+//            mKeyboardFocus = false;
+//            updateCaption = true;
+//            break;
+
+//            //Window minimized
+//            case SDL_WINDOWEVENT_MINIMIZED:
+//            mMinimized = true;
+//            break;
+
+//            //Window maxized
+//            case SDL_WINDOWEVENT_MAXIMIZED:
+//            mMinimized = false;
+//            break;
+
+//            //Window restored
+//            case SDL_WINDOWEVENT_RESTORED:
+//            mMinimized = false;
+//            break;
+
+//            //Hide on close
+//            case SDL_WINDOWEVENT_CLOSE:
+//            SDL_HideWindow( mWindow );
+//            break;
+//        }
+
+//        //Update window caption with new data
+//        if( updateCaption )
+//        {
+//            std::stringstream caption;
+//            caption << "SDL Tutorial - ID: " << mWindowID << " MouseFocus:" << ( ( mMouseFocus ) ? "On" : "Off" ) << " KeyboardFocus:" << ( ( mKeyboardFocus ) ? "On" : "Off" );
+//            SDL_SetWindowTitle( mWindow, caption.str().c_str() );
+
+
+//            if(e.window.windowID==2)
+//            {
+//               SDL_SetRenderDrawColor( mRenderer, 0xFF, 0x00, 0xFF, 0xFF );
+//            }
+//            else
+//            {
+//                SDL_SetRenderDrawColor( mRenderer, 0xFF, 0xFF, 0xFF, 0xFF );
+//            }
+
+
+//        }
+//    }
+//}
+
+//void LWindow::focus()
+//{
+//    //Restore window if needed
+//    if( !mShown )
+//    {
+//        SDL_ShowWindow( mWindow );
+//    }
+
+//    //Move window forward
+//    SDL_RaiseWindow( mWindow );
+//}
+
+//void LWindow::render()
+//{
+//    if( !mMinimized )
+//    {
+//        //Clear screen
+////        SDL_SetRenderDrawColor( mRenderer, 0xFF, 0xFF, 0xFF, 0xFF );
+//        SDL_RenderClear( mRenderer );
+
+//        //Update screen
+//        SDL_RenderPresent( mRenderer );
+//    }
+//}
+
+//void LWindow::free()
+//{
+//    if( mWindow != NULL )
+//    {
+//        SDL_DestroyWindow( mWindow );
+//    }
+
+//    mMouseFocus = false;
+//    mKeyboardFocus = false;
+//    mWidth = 0;
+//    mHeight = 0;
+//}
+
+//int LWindow::getWidth()
+//{
+//    return mWidth;
+//}
+
+//int LWindow::getHeight()
+//{
+//    return mHeight;
+//}
+
+//bool LWindow::hasMouseFocus()
+//{
+//    return mMouseFocus;
+//}
+
+//bool LWindow::hasKeyboardFocus()
+//{
+//    return mKeyboardFocus;
+//}
+
+//bool LWindow::isMinimized()
+//{
+//    return mMinimized;
+//}
+
+//bool LWindow::isShown()
+//{
+//    return mShown;
+//}
+
+//bool init()
+//{
+//    //Initialization flag
+//    bool success = true;
+
+//    //Initialize SDL
+//    if( SDL_Init( SDL_INIT_VIDEO ) < 0 )
+//    {
+//        printf( "SDL could not initialize! SDL Error: %s\n", SDL_GetError() );
+//        success = false;
+//    }
+//    else
+//    {
+//        //Set texture filtering to linear
+//        if( !SDL_SetHint( SDL_HINT_RENDER_SCALE_QUALITY, "1" ) )
+//        {
+//            printf( "Warning: Linear texture filtering not enabled!" );
+//        }
+
+//        //Create window
+//        if( !gWindows[ 0 ].init() )
+//        {
+//            printf( "Window 0 could not be created!\n" );
+//            success = false;
+//        }
+//    }
+
+//    return success;
+//}
+
+//void close()
+//{
+//    //Destroy windows
+//    for( int i = 0; i < TOTAL_WINDOWS; ++i )
+//    {
+//        gWindows[ i ].free();
+//    }
+
+//    //Quit SDL subsystems
+//    SDL_Quit();
+//}
+
+//int main( int argc, char* args[] )
+//{
+//    //Start up SDL and create window
+//    if( !init() )
+//    {
+//        printf( "Failed to initialize!\n" );
+//    }
+//    else
+//    {
+//        //Initialize the rest of the windows
+//        for( int i = 1; i < TOTAL_WINDOWS; ++i )
+//        {
+//            gWindows[ i ].init();
+//        }
+
+//        //Main loop flag
+//        bool quit = false;
+
+//        //Event handler
+//        SDL_Event e;
+
+//        //While application is running
+//        while( !quit )
+//        {
+//            //Handle events on queue
+//            while( SDL_PollEvent( &e ) != 0 )
+//            {
+//                //User requests quit
+//                if( e.type == SDL_QUIT )
+//                {
+//                    quit = true;
+//                }
+
+//                //Handle window events
+//                for( int i = 0; i < TOTAL_WINDOWS; ++i )
+//                {
+//                    gWindows[ i ].handleEvent( e );
+//                }
+
+//                //Pull up window
+//                if( e.type == SDL_KEYDOWN )
+//                {
+//                    switch( e.key.keysym.sym )
+//                    {
+//                        case SDLK_1:
+//                        gWindows[ 0 ].focus();
+//                        break;
+
+//                        case SDLK_2:
+//                        gWindows[ 1 ].focus();
+//                        break;
+
+//                        case SDLK_3:
+//                        gWindows[ 2 ].focus();
+//                        break;
+//                    }
+//                }
+//            }
+
+//            //Update all windows
+//            for( int i = 0; i < TOTAL_WINDOWS; ++i )
+//            {
+//                gWindows[ i ].render();
+//            }
+
+//            //Check all windows
+//            bool allWindowsClosed = true;
+//            for( int i = 0; i < TOTAL_WINDOWS; ++i )
+//            {
+//                if( gWindows[ i ].isShown() )
+//                {
+//                    allWindowsClosed = false;
+//                    break;
+//                }
+//            }
+
+//            //Application closed all windows
+//            if( allWindowsClosed )
+//            {
+//                quit = true;
+//            }
+//        }
+//    }
+
+//    //Free resources and close SDL
+//    close();
+
+//    return 0;
+//}
