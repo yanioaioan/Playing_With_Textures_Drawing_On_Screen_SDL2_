@@ -14,10 +14,10 @@ CXX           = cl
 DEFINES       = -DUNICODE -DWIN32 -DWIN64 -DNDEBUG
 CFLAGS        = -nologo -Zm200 -Zc:wchar_t -FS -O2 -MD -Zc:strictStrings -W3 $(DEFINES)
 CXXFLAGS      = -nologo -Zm200 -Zc:wchar_t -FS -O2 -MD -Zc:strictStrings -GR -W3 -w34100 -w34189 -EHsc $(DEFINES)
-INCPATH       = -I"." -I"include" -I"include" -I"C:\Qt\5.4\msvc2013_64_opengl\mkspecs\win32-msvc2013" 
+INCPATH       = -I"." -I"\usr\include" -I"include" -I"include" -I"C:\Qt\5.4\msvc2013_64_opengl\mkspecs\win32-msvc2013" 
 LINKER        = link
 LFLAGS        = /NOLOGO /DYNAMICBASE /NXCOMPAT /INCREMENTAL:NO /SUBSYSTEM:CONSOLE "/MANIFESTDEPENDENCY:type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' publicKeyToken='6595b64144ccf1df' language='*' processorArchitecture='*'"
-LIBS          = /LIBPATH:C:\Users\yanioaioan\Documents\GitHub\SDL2_Playing_With_Textures_Drawing_On_Screen\QTTest40_texture_manipulation\lib\ C:\Users\yanioaioan\Documents\GitHub\SDL2_Playing_With_Textures_Drawing_On_Screen\QTTest40_texture_manipulation\lib\\SDL2main.lib C:\Users\yanioaioan\Documents\GitHub\SDL2_Playing_With_Textures_Drawing_On_Screen\QTTest40_texture_manipulation\lib\\SDL2_image.lib C:\Users\yanioaioan\Documents\GitHub\SDL2_Playing_With_Textures_Drawing_On_Screen\QTTest40_texture_manipulation\lib\\SDL2_ttf.lib C:\Users\yanioaioan\Documents\GitHub\SDL2_Playing_With_Textures_Drawing_On_Screen\QTTest40_texture_manipulation\lib\\SDL2.lib 
+LIBS          = /LIBPATH:\usr\lib SDL2.lib SDL2_image.lib SDL2_ttf.lib /LIBPATH:C:\Users\yanioaioan\Documents\GitHub\SDL2_Playing_With_Textures_Drawing_On_Screen\QTTest40_texture_manipulation\lib\ C:\Users\yanioaioan\Documents\GitHub\SDL2_Playing_With_Textures_Drawing_On_Screen\QTTest40_texture_manipulation\lib\\SDL2main.lib C:\Users\yanioaioan\Documents\GitHub\SDL2_Playing_With_Textures_Drawing_On_Screen\QTTest40_texture_manipulation\lib\\SDL2_image.lib C:\Users\yanioaioan\Documents\GitHub\SDL2_Playing_With_Textures_Drawing_On_Screen\QTTest40_texture_manipulation\lib\\SDL2_ttf.lib C:\Users\yanioaioan\Documents\GitHub\SDL2_Playing_With_Textures_Drawing_On_Screen\QTTest40_texture_manipulation\lib\\SDL2.lib 
 QMAKE         = C:\Qt\5.4\msvc2013_64_opengl\bin\qmake.exe
 IDC           = idc
 IDL           = midl
@@ -118,7 +118,8 @@ compiler_clean:
 
 ####### Compile
 
-release\main.obj: main.cpp include\SDL.h \
+release\main.obj: main.cpp include\SDL_image.h \
+		include\SDL.h \
 		include\SDL_main.h \
 		include\SDL_stdinc.h \
 		include\SDL_config.h \
@@ -161,7 +162,6 @@ release\main.obj: main.cpp include\SDL.h \
 		include\SDL_system.h \
 		include\SDL_timer.h \
 		include\SDL_version.h \
-		include\SDL_image.h \
 		include\SDL_ttf.h
 
 ####### Install

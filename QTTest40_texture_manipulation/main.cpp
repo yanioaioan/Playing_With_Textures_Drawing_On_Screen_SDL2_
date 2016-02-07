@@ -1284,25 +1284,28 @@ int main(int argc, char ** argv)
         case SDL_MOUSEMOTION:
             if (leftMouseButtonDown)
             {
-                if(event.window.windowID==2)
+                if(event.window.windowID==1)
                 {
                     int mouseX = event.motion.x;
                     int mouseY = event.motion.y;
+
 
                     Uint8 r ;
                     Uint8 g ;
                     Uint8 b ;
-                    r=0;g=0;b=0;
+                    r=255;g=0;b=25;
                     tmpColor=r+g+b;
-                    pixels[mouseY * 640 + mouseX] = (0xFF << 24) | (tmpColor << 16) | (tmpColor << 8) | tmpColor;
+//                    =(0xFF << 24) | (tmpColor << 16) | (tmpColor << 8) | tmpColor;
+
+                    Uint32 pix=SDL_MapRGB(formattedSurface->format,r,g,b);
+
+                    pixels[mouseY * 640 + mouseX] = pix;//(0xFF << 24) | (tmpColor << 16) | (tmpColor << 8) | tmpColor;;
                 }
-                else if(event.window.windowID==3)
+                else if(event.window.windowID==2)
                 {
                     int mouseX = event.motion.x;
                     int mouseY = event.motion.y;
                     //set it to black
-
-
 
                     Uint8 r ;
                     Uint8 g ;
@@ -1310,21 +1313,18 @@ int main(int argc, char ** argv)
                     //convert void * to Uint32  array
                     Uint32 *pxls= (Uint32*)pixels2;
                     //Get a specific pixel
-                    Uint32 p=pxls[mouseY * 200 + mouseX];
-
-//                    SDL_GetRGB(p,formattedSurface->format,&r,&g,&b);
-
+//                    Uint32 p=pxls[mouseY * 200 + mouseX];
 
                     std::cout<<"mouseX="<<mouseX<<" , "<<"mouseY="<<mouseY<<std::endl;
 
-                    if (r==0 &&g==0&&b==0)
+                    if (r==0 &&g==0 &&b==0)
                     {
                         r=255;g=255;b=255;
-                        tmpColor = r + g + b;
-                        Uint8 tmpColor = r + g + b;
+//                        tmpColor = r + g + b;
                         std::cout<<"Black color portion of texture"<<std::endl;
+                        Uint32 pix=SDL_MapRGB(formattedSurface->format,r,g,b);
 //                        pxls[mouseY * 200 + mouseX] = 255;
-                        pxls[mouseY * 200 + mouseX] = (0xFF << 24) | (tmpColor << 16) | (tmpColor << 8) | tmpColor;
+                        pxls[mouseY * 200 + mouseX] = SDL_MapRGB(formattedSurface->format,r,g,b);//(0xFF << 24) | (tmpColor << 16) | (tmpColor << 8) | tmpColor;
                     }
                     else
                     {   std::cout<<"White color portion of texture"<<std::endl;
@@ -1333,7 +1333,7 @@ int main(int argc, char ** argv)
                         tmpColor = r + g + b;
 
 //                        pxls[mouseY * 200 + mouseX] = 0;
-                        pxls[mouseY * 200 + mouseX] = (0xFF << 24) | (tmpColor << 16) | (tmpColor << 8) | tmpColor;
+                        pxls[mouseY * 200 + mouseX] = SDL_MapRGB(formattedSurface->format,r,g,b);;//(0xFF << 24) | (tmpColor << 16) | (tmpColor << 8) | tmpColor;
                     }
                 }
             }
