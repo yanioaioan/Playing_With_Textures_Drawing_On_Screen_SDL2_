@@ -1,3 +1,142 @@
+//#include <SDL.h>
+
+//#include <SDL_image.h>
+//#include <iostream>
+
+//int main(int argc, char ** argv)
+
+//{
+
+//    bool quit = false;
+
+//    SDL_Event event;
+
+//    SDL_Init(SDL_INIT_VIDEO);
+
+//    IMG_Init(IMG_INIT_JPG);
+
+//    SDL_Window * window = SDL_CreateWindow("SDL2 Grayscale",
+
+//        SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 640, 480, 0);
+
+//    SDL_Renderer * renderer = SDL_CreateRenderer(window, -1, 0);
+
+//    SDL_Surface * image = IMG_Load("antipaxoi.png");
+//    image = SDL_ConvertSurfaceFormat(image, SDL_PIXELFORMAT_ARGB8888, 0);
+//    Uint32 * pixels = (Uint32 *)image->pixels;
+
+
+////    SDL_Texture * texture = SDL_CreateTextureFromSurface(renderer,image);
+//    SDL_Texture * texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STATIC, image->w, image->h);
+
+
+//    while (!quit)
+//    {
+//        SDL_UpdateTexture(texture, NULL, image->pixels, image->w * sizeof(Uint32));
+
+//        SDL_WaitEvent(&event);
+
+//        switch (event.type)
+//        {
+
+//            case SDL_QUIT:
+
+//                quit = true;
+
+//                break;
+//            case SDL_KEYDOWN:
+
+//                switch (event.key.keysym.sym)
+
+//                {
+
+//                    case SDLK_g:
+
+//                        for (int y = 0; y < image->h; y++)
+
+//                        {
+
+//                            for (int x = 0; x < image->w; x++)
+
+//                            {
+
+//                                Uint32 pixel = pixels[y * image->w + x];
+
+//                                // TODO convert pixel to grayscale here
+
+//                                //get this pixel's r,g,b colors
+//                                Uint8 r = pixel >> 16 & 0xFF;
+//                                Uint8 g = pixel >> 8 & 0xFF;
+//                                Uint8 b = pixel & 0xFF;
+
+//                                //manipulate colors and save them back to v
+//                                //Uint8 v = 0.212671f * r + 0.715160f * g + 0.072169f * b;
+////                                r=255;g=0;b=0;
+////
+
+
+////                                std::cout<<(int)r<<","<<(int)g<<","<<(int)b<<std::endl;
+
+//                                r=255;g=255;b=0;
+
+
+
+//                                //assign v to pixels
+//                                pixel = (0xFF << 24) | (r << 16) | (g << 8) | b;
+
+//                                pixels[y * image->w + x] = pixel;
+
+
+//                            }
+
+//                        }
+
+//                break;
+
+//                }
+
+//            break;
+
+//        }
+
+//        SDL_RenderCopy(renderer, texture, NULL, NULL);
+
+//        SDL_RenderPresent(renderer);
+
+//    }
+
+//    SDL_DestroyTexture(texture);
+
+//    SDL_FreeSurface(image);
+
+//    SDL_DestroyRenderer(renderer);
+
+//    SDL_DestroyWindow(window);
+
+//    IMG_Quit();
+
+//    SDL_Quit();
+
+//    return 0;
+
+//}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ///*This source code copyrighted by Lazy Foo' Productions (2004-2015)
 //and may not be redistributed without written permission.*/
 
@@ -1210,6 +1349,10 @@ int main(int argc, char ** argv)
 
     Uint8 tmpColor;
 
+    //ToolBox Booleans
+    typedef enum {FALSE,TRUE} boolean;
+    boolean drawRectangle =FALSE;
+
     ///////////////////////////////////////////////////////////////////
     /// \brief loadedSurface
     const char * path="toolbox.png";
@@ -1272,6 +1415,8 @@ int main(int argc, char ** argv)
         SDL_UpdateTexture(texture2, NULL, pixels2, 200 * sizeof(Uint32));
         SDL_PollEvent(&event);
 
+        SDL_Rect DestR;
+
         switch (event.type)
         {
         case SDL_MOUSEBUTTONUP:
@@ -1284,25 +1429,75 @@ int main(int argc, char ** argv)
         case SDL_MOUSEMOTION:
             if (leftMouseButtonDown)
             {
+
+
                 if(event.window.windowID==1)
                 {
                     int mouseX = event.motion.x;
                     int mouseY = event.motion.y;
 
 
-                    Uint8 r ;
-                    Uint8 g ;
-                    Uint8 b ;
-                    r=255;g=0;b=25;
-                    tmpColor=r+g+b;
-//                    =(0xFF << 24) | (tmpColor << 16) | (tmpColor << 8) | tmpColor;
 
-                    Uint32 pix=SDL_MapRGB(formattedSurface->format,r,g,b);
+                    //Create a brush (draws on surrounding pixels as well depending on the brushsize)
+                    int brushsize=8;
+                    for(int i=0;i<brushsize/2;i++)
+                    {
+                        for(int j=0;j<brushsize/2;j++)
+                        {
+                            Uint8 r ;
+                            Uint8 g ;
+                            Uint8 b ;
+                            r=0;g=255;b=0;
+//                            tmpColor=r+g+b;
+//                            =(0xFF << 24) | (tmpColor << 16) | (tmpColor << 8) | tmpColor;
 
-                    pixels[mouseY * 640 + mouseX] = pix;//(0xFF << 24) | (tmpColor << 16) | (tmpColor << 8) | tmpColor;;
+                            Uint32 pix=SDL_MapRGB(formattedSurface->format,r,g,b);
+
+                            pixels[(mouseY+j) * 640 + mouseX+i] = pix;//(0xFF << 24) | (tmpColor << 16) | (tmpColor << 8) | tmpColor;;
+
+                            DestR.x = mouseX;
+                            DestR.y = mouseY;
+                            DestR.w = brushsize/2;
+                            DestR.h = brushsize/2;
+
+                        }
+                    }
+
+
+                    //draw rectangle
+                    if (drawRectangle==TRUE)
+                    {
+                        int brushsize=8;
+                        for(int i=0;i<brushsize/2;i++)
+                        {
+                            for(int j=0;j<brushsize/2;j++)
+                            {
+                                Uint8 r ;
+                                Uint8 g ;
+                                Uint8 b ;
+                                r=0;g=255;b=0;
+    //                            tmpColor=r+g+b;
+    //                            =(0xFF << 24) | (tmpColor << 16) | (tmpColor << 8) | tmpColor;
+
+                                Uint32 pix=SDL_MapRGB(formattedSurface->format,r,g,b);
+
+                                pixels[(mouseY+j) * 640 + mouseX+i] = pix;//(0xFF << 24) | (tmpColor << 16) | (tmpColor << 8) | tmpColor;;
+                            }
+                        }
+                    }
+
+                    SDL_Rect outlineRect = { 100 , 100, 100, 100 };
+                    SDL_SetRenderDrawColor( renderer, 0xFF, 0x00, 0x00, 0xFF );
+                    SDL_RenderDrawRect( renderer, &outlineRect );
+
+
+
+
+
                 }
                 else if(event.window.windowID==2)
                 {
+
                     int mouseX = event.motion.x;
                     int mouseY = event.motion.y;
                     //set it to black
@@ -1319,6 +1514,8 @@ int main(int argc, char ** argv)
 
                     if (r==0 &&g==0 &&b==0)
                     {
+                        drawRectangle=TRUE;
+
                         r=255;g=255;b=255;
 //                        tmpColor = r + g + b;
                         std::cout<<"Black color portion of texture"<<std::endl;
@@ -1343,8 +1540,8 @@ int main(int argc, char ** argv)
             break;
         }
 
-        SDL_RenderClear(renderer);
-        SDL_RenderCopy(renderer, texture, NULL, NULL);
+//        SDL_RenderClear(renderer);
+        SDL_RenderCopy(renderer, texture, NULL, &DestR);
         SDL_RenderPresent(renderer);
 
         SDL_RenderClear(renderer2);
