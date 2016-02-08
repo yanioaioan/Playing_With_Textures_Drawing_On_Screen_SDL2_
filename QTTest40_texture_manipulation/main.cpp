@@ -1346,6 +1346,8 @@ int main(int argc, char ** argv)
 
     Uint32 * pixels = new Uint32[640 * 480];
     void * pixels2;
+    Uint32 *backbufferPixels = new Uint32[640 * 480];
+    int sizeofbackbufferPixels;
 
     Uint8 tmpColor;
 
@@ -1407,7 +1409,9 @@ int main(int argc, char ** argv)
 //    Uint32 * pixels2 = new Uint32[200 * 200];
 
     memset(pixels, 255, 640 * 480 * sizeof(Uint32));
-//    memset(pixels2, 255, 200 * 200 * sizeof(Uint32));
+
+    //Now create the backbuffercopy of the original pixel array (our board)
+    memcpy(pixels, backbufferPixels,  640 * 480 * sizeof(Uint32));
 
     while (!quit)
     {
@@ -1425,7 +1429,26 @@ int main(int argc, char ** argv)
         {
         case SDL_MOUSEBUTTONUP:
             if (event.button.button == SDL_BUTTON_LEFT)
-                leftMouseButtonDown = false;
+            {   leftMouseButtonDown = false;
+
+            //now draw the actual line of points
+
+                Uint32 *pxls=(Uint32*)backbufferPixels;
+                for(int i=0;i<sizeofbackbufferPixels;i++)
+                {
+                    Uint8 r ;
+                    Uint8 g ;
+                    Uint8 b ;
+
+
+//                    SDL_GetRGB(p,formattedSurface->format,&r,&g,&b);
+
+                    Uint32 pix=SDL_MapRGB(formattedSurface->format,r,g,b);
+
+//                    pixels[(i) * 640 + i] = pix;//(0xFF << 24) | (tmpColor << 16) | (tmpColor << 8) | tmpColor;;
+                }
+
+            }
             break;
         case SDL_MOUSEBUTTONDOWN:
             if (event.button.button == SDL_BUTTON_LEFT)
@@ -1463,6 +1486,35 @@ int main(int argc, char ** argv)
 
                         }
                     }
+
+                    //Make sure we draw the texture and THEN..we draw on the top of it for the backbuffer lines,points (for circle,rectangle)
+                    SDL_RenderCopy(renderer, texture, NULL, NULL);
+
+
+                    //Now draw the rectangle on the top
+//                    SDL_Rect r;
+//                    r.x = 50;
+//                    r.y = 50;
+//                    r.w = 50;
+//                    r.h = 50;
+//                    // Set render color to blue ( rect will be rendered in this color )
+//                    SDL_SetRenderDrawColor( renderer, 0, 0, 255, 255 );
+//                    // Render rect
+//                    SDL_RenderDrawRect( renderer, &r );
+
+//                    for (int i=0;i<50;i++)
+//                    {
+//                            backbufferPixels=NULL;
+//                            backbufferPixels= (Uint32*)malloc(10*sizeof(Uint32));
+//                            SDL_RenderDrawPoint(renderer,i,i);
+
+//                            backbufferPixels = (Uint32*) realloc (backbufferPixels, i*sizeof(Uint32));
+////                            Uint32 tmpPixel=
+////                            backbufferPixels[i]=
+//                            std::cout<<i<<std::endl;
+//                            sizeofbackbufferPixels=i;
+//                    }
+
 
 
 //                    //draw rectangle
@@ -1548,21 +1600,41 @@ int main(int argc, char ** argv)
 
         // Creat a rect at pos ( 50, 50 ) that's 50 pixels wide and 50 pixels high.
 
+        if(!leftMouseButtonDown)
+        {
+            SDL_RenderCopy(renderer, texture, NULL, NULL);
+        }
 
 
+//        int drawAreaWidth=50;
+//        int drawAreaHeight=50;
+//        SDL_Texture * buffer=SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STATIC,drawAreaWidth,drawAreaHeight);
 
-        SDL_RenderCopy(renderer, texture, NULL, NULL);
+
 
         //Now draw the rectangle on the top
-        SDL_Rect r;
-        r.x = 50;
-        r.y = 50;
-        r.w = 50;
-        r.h = 50;
-        // Set render color to blue ( rect will be rendered in this color )
-        SDL_SetRenderDrawColor( renderer, 0, 0, 255, 255 );
-        // Render rect
-        SDL_RenderDrawRect( renderer, &r );
+//        SDL_Rect r;
+//        r.x = 50;
+//        r.y = 50;
+//        r.w = 50;
+//        r.h = 50;
+//        // Set render color to blue ( rect will be rendered in this color )
+//        SDL_SetRenderDrawColor( renderer, 0, 0, 255, 255 );
+//        // Render rect
+//        SDL_RenderDrawRect( renderer, &r );
+//        for (int i=0;i<50;i++)
+//        {
+//            SDL_RenderDrawPoint(renderer,i,i);
+//        }
+
+//        SDL_Rect d;
+//        d.x = 50;
+//        d.y = 50;
+//        d.w = 50;
+//        d.h = 50;
+
+//        SDL_RenderCopy(renderer,texture,NULL,&r);
+
 
         //update the rendered image
         SDL_RenderPresent(renderer);
@@ -1584,54 +1656,3 @@ int main(int argc, char ** argv)
 }
 
 
-
-
-
-//#include <SDL2/SDL.h>
-
-//int main (int argc, char** argv)
-//{
-//    SDL_Window* window = NULL;
-//    window = SDL_CreateWindow
-//    (
-//        "Jeu de la vie", SDL_WINDOWPOS_UNDEFINED,
-//        SDL_WINDOWPOS_UNDEFINED,
-//        640,
-//        480,
-//        SDL_WINDOW_SHOWN
-//    );
-
-//    // Setup renderer
-//    SDL_Renderer* renderer = NULL;
-//    renderer =  SDL_CreateRenderer( window, -1, SDL_RENDERER_ACCELERATED);
-
-//    // Set render color to red ( background will be rendered in this color )
-//    SDL_SetRenderDrawColor( renderer, 255, 0, 0, 255 );
-
-//    // Clear winow
-////    SDL_RenderClear( renderer );
-
-//    // Creat a rect at pos ( 50, 50 ) that's 50 pixels wide and 50 pixels high.
-//    SDL_Rect r;
-//    r.x = 50;
-//    r.y = 50;
-//    r.w = 50;
-//    r.h = 50;
-
-//    // Set render color to blue ( rect will be rendered in this color )
-//    SDL_SetRenderDrawColor( renderer, 0, 0, 255, 255 );
-
-//    // Render rect
-//    SDL_RenderDrawRect( renderer, &r );
-
-//    // Render the rect to the screen
-//    SDL_RenderPresent(renderer);
-
-//    // Wait for 5 sec
-//    SDL_Delay( 5000 );
-
-//    SDL_DestroyWindow(window);
-//    SDL_Quit();
-
-//    return EXIT_SUCCESS;
-//}
