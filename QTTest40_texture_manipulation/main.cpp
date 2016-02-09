@@ -1410,11 +1410,11 @@ void drawBresenhamLine(int x,int y,int x2,int y2)
       {
           SDL_RenderDrawPoint(renderer,x,y);
 
-          lineArray=(Point*)realloc(lineArray,(x+1)*sizeof(Point));
+          lineArray=(Point*)realloc(lineArray,(i+1)*sizeof(Point));
           lineArray[i]=Point(x,y);
 
 
-          std::cout<<"lineArray="<<lineArray[i].x<<","<<lineArray[i].y<<std::endl;
+//          std::cout<<"lineArray="<<lineArray[i].x<<","<<lineArray[i].y<<std::endl;
 
           numerator += shortest ;
           if (!(numerator<longest))
@@ -1440,7 +1440,7 @@ void drawBresenhamLine(int x,int y,int x2,int y2)
     //Now create the backbuffercopy of the original pixel array (our board)
     memcpy(backbufferPixels, pixels,  640 * 480 * sizeof(Uint32));
 
-    for(int i=0;i<longest;i++)
+    for(int i=0;i<=longest;i++)
     {
         SDL_Color pointcolor;
         pointcolor.r=0;pointcolor.g=255;pointcolor.b=0;
