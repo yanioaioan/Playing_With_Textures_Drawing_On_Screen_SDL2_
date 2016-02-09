@@ -1326,41 +1326,208 @@
 #include <iostream>
 #include <SDL.h>
 
+
+bool leftMouseButtonDown = false;
+bool quit = false;
+SDL_Event event;
+
+
+SDL_Window * window;
+int drawingWindowId;
+int ToolsWindowId;
+
+SDL_Renderer * renderer;
+SDL_Renderer * renderer2;
+SDL_Texture * texture;
+
+Uint32 * pixels = new Uint32[640 * 480];
+void * pixels2;
+//Uint32 *backbufferPixels = new Uint32[640 * 480];
+Uint32 * backbufferPixels= (Uint32*)malloc(640 * 480 * sizeof(Uint32));
+int sizeofbackbufferPixels;
+
+Uint8 tmpColor;
+
+//ToolBox Booleans
+typedef enum {FALSE,TRUE} boolean;
+boolean drawRectangle =FALSE;
+boolean drawPointLine =FALSE;
+boolean NOWDRAWING =FALSE;
+
+///////////////////////////////////////////////////////////////////
+/// \brief loadedSurface
+const char * path="toolbox.png";
+SDL_Surface* loadedSurface;
+SDL_Surface* formattedSurface;
+SDL_Texture * texture2;
+
+
+
+typedef struct Point
+{
+    Point(){;}
+    Point(int _x,int _y){x=_x;y=_y;}
+    ~Point(){}
+    Point(const Point &_p){x=_p.x;y=_p.y;}
+    void operator=(const Point &_p){x=_p.x;y=_p.y;}
+
+    int x,y;
+}p;
+
+
+
+Point lineStart;
+Point lineEnd;
+
+void drawBresenhamLine(int x,int y,int x2,int y2)
+{
+      Point * lineArray=NULL;
+      lineArray=(Point*)malloc(1*sizeof(Point));
+
+
+      //http://tech-algorithm.com/articles/drawing-line-using-bresenham-algorithm/
+
+      int w = x2 - x ;
+      int h = y2 - y ;
+      int dx1 = 0, dy1 = 0, dx2 = 0, dy2 = 0 ;
+      if (w<0) dx1 = -1 ; else if (w>0) dx1 = 1 ;
+      if (h<0) dy1 = -1 ; else if (h>0) dy1 = 1 ;
+      if (w<0) dx2 = -1 ; else if (w>0) dx2 = 1 ;
+
+      int longest = abs(w) ;
+      int shortest = abs(h) ;
+
+      if (!(longest>shortest))
+      {
+          longest = abs(h) ;
+          shortest = abs(w) ;
+          if (h<0) dy2 = -1 ;
+          else if (h>0) dy2 = 1 ;
+          dx2 = 0 ;
+      }
+      int numerator = longest >> 1 ;
+      for (int i=0;i<=longest;i++)
+      {
+          SDL_RenderDrawPoint(renderer,x,y);
+
+          lineArray=(Point*)realloc(lineArray,(x+1)*sizeof(Point));
+          lineArray[i]=Point(x,y);
+
+
+          std::cout<<"lineArray="<<lineArray[i].x<<","<<lineArray[i].y<<std::endl;
+
+          numerator += shortest ;
+          if (!(numerator<longest))
+          {
+              numerator -= longest ;
+              x += dx1 ;
+              y += dy1 ;
+          } else {
+              x += dx2 ;
+              y += dy2 ;
+          }
+      }
+
+
+    //clear our buffer constantly so as to end up with only 1 line
+
+
+//    backbufferPixels=NULL;
+//    Uint32 *backbufferPixels = new Uint32[640 * 480];
+//    backbufferPixels= (Uint32*)malloc(640 * 480 * sizeof(Uint32));
+
+
+    //Now create the backbuffercopy of the original pixel array (our board)
+    memcpy(backbufferPixels, pixels,  640 * 480 * sizeof(Uint32));
+
+    for(int i=0;i<longest;i++)
+    {
+        SDL_Color pointcolor;
+        pointcolor.r=0;pointcolor.g=255;pointcolor.b=0;
+        Uint32 tmpPixel=SDL_MapRGB(formattedSurface->format, pointcolor.r,pointcolor.g,pointcolor.b);
+        backbufferPixels[lineArray[i].y * 640 + lineArray[i].x]=tmpPixel;
+    }
+
+    free(lineArray);
+
+
+
+////    Point lineArray[100]={Point(0,0)};
+
+//      int lineArrayElements=0;
+//      Point * lineArray=NULL;
+//      lineArray=(Point*)malloc(1*sizeof(Point));
+//      lineArrayElements++;
+//      int dx=x1-x0;
+//      int dy=y1-y0;
+
+//      int D = 2*dy - dx;
+//      lineArray[0]=Point(x0,y0);;
+//      int y=y0;
+
+////      if (D > 0)
+////      {
+////          y = y+1;
+////          D = D - (2*dx);
+////      }
+
+//      for(int x=x0+1;x<=x1;x++)
+//      {
+//          lineArray=(Point*)realloc(lineArray,(x+1)*sizeof(Point));
+//          lineArray[x]=Point(x,y);
+//          D = D + (2*dy);
+//          if (D > 0)
+//          {
+//            y = y+1;
+//            D = D - (2*dx);
+//          }
+//          lineArrayElements++;
+//      }
+
+
+//      for(int i=0;i<lineArrayElements;i++)
+//      {
+//          Point tmpPlotingPoint=lineArray[i];
+
+//          SDL_SetRenderDrawColor( renderer, 0, 0, 255, 255 );
+
+//          //back buffer draw points
+//          SDL_RenderDrawPoint(renderer,tmpPlotingPoint.x,tmpPlotingPoint.y);
+////          SDL_Color pointcolor;
+////          pointcolor.r=0;pointcolor.g=255;pointcolor.b=0;
+////          Uint32 tmpPixel=SDL_MapRGB(formattedSurface->format, pointcolor.r,pointcolor.g,pointcolor.b);
+////          backbufferPixels[tmpPlotingPoint.y * 640 + tmpPlotingPoint.x]=tmpPixel;
+
+//      }
+
+
+//      free(lineArray);
+
+}
+
 int main(int argc, char ** argv)
 {
-    bool leftMouseButtonDown = false;
-    bool quit = false;
-    SDL_Event event;
 
     SDL_Init(SDL_INIT_VIDEO);
 
     SDL_Window * window = SDL_CreateWindow("SDL2 Pixel Drawing",
         SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 640, 480, 0);
+
+    int drawingWindowId=SDL_GetWindowID(window);
     SDL_Window * window2 = SDL_CreateWindow("Tools",
         SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 200, 200, 0);
+    int ToolsWindowId=SDL_GetWindowID(window2);
 
-    SDL_Renderer * renderer = SDL_CreateRenderer(window, -1, 0);
-    SDL_Renderer * renderer2 = SDL_CreateRenderer(window2, -1, 0);
-    SDL_Texture * texture = SDL_CreateTexture(renderer,
+
+
+    renderer = SDL_CreateRenderer(window, -1, 0);
+    renderer2 = SDL_CreateRenderer(window2, -1, 0);
+    texture = SDL_CreateTexture(renderer,
         SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STATIC, 640, 480);
 
-    Uint32 * pixels = new Uint32[640 * 480];
-    void * pixels2;
-    Uint32 *backbufferPixels = new Uint32[640 * 480];
-    int sizeofbackbufferPixels;
+    loadedSurface=IMG_Load( /*path.c_str() */ path);
 
-    Uint8 tmpColor;
 
-    //ToolBox Booleans
-    typedef enum {FALSE,TRUE} boolean;
-    boolean drawRectangle =FALSE;
-
-    ///////////////////////////////////////////////////////////////////
-    /// \brief loadedSurface
-    const char * path="toolbox.png";
-    SDL_Surface* loadedSurface = IMG_Load( /*path.c_str() */ path);
-    SDL_Surface* formattedSurface;
-    SDL_Texture * texture2;
         if( loadedSurface == NULL )
         {
             printf( "Unable to load image %s! SDL_image Error: %s\n", path, IMG_GetError() );
@@ -1411,7 +1578,7 @@ int main(int argc, char ** argv)
     memset(pixels, 255, 640 * 480 * sizeof(Uint32));
 
     //Now create the backbuffercopy of the original pixel array (our board)
-    memcpy(pixels, backbufferPixels,  640 * 480 * sizeof(Uint32));
+    memcpy(backbufferPixels, pixels,  640 * 480 * sizeof(Uint32));
 
     while (!quit)
     {
@@ -1431,22 +1598,30 @@ int main(int argc, char ** argv)
             if (event.button.button == SDL_BUTTON_LEFT)
             {   leftMouseButtonDown = false;
 
-            //now draw the actual line of points
+                //now draw the actual line of points
 
                 Uint32 *pxls=(Uint32*)backbufferPixels;
-                for(int i=0;i<sizeofbackbufferPixels;i++)
-                {
-                    Uint8 r ;
-                    Uint8 g ;
-                    Uint8 b ;
+
+                //Decision made- Now mouse is up, so copy to original 'pixel' data the buffered data.
+                memcpy(pixels,backbufferPixels,640*480*sizeof(Uint32));
+
+
+                NOWDRAWING=FALSE;
+//                drawPointLine=FALSE;
+
+//                for(int i=0;i<sizeofbackbufferPixels;i++)
+//                {
+//                    Uint8 r ;
+//                    Uint8 g ;
+//                    Uint8 b ;
 
 
 //                    SDL_GetRGB(p,formattedSurface->format,&r,&g,&b);
 
-                    Uint32 pix=SDL_MapRGB(formattedSurface->format,r,g,b);
+//                    Uint32 pix=SDL_MapRGB(formattedSurface->format,r,g,b);
 
 //                    pixels[(i) * 640 + i] = pix;//(0xFF << 24) | (tmpColor << 16) | (tmpColor << 8) | tmpColor;;
-                }
+//                }
 
             }
             break;
@@ -1458,37 +1633,29 @@ int main(int argc, char ** argv)
             {
 
 
-                if(event.window.windowID==2)
+                if(event.window.windowID==drawingWindowId)
                 {
                     int mouseX = event.motion.x;
                     int mouseY = event.motion.y;
 
 
 
-                    //Create a brush (draws on surrounding pixels as well depending on the brushsize)
-                    int brushsize=8;
-                    for(int i=0;i<brushsize/2;i++)
-                    {
-                        for(int j=0;j<brushsize/2;j++)
-                        {
-                            Uint8 r ;
-                            Uint8 g ;
-                            Uint8 b ;
-                            r=0;g=255;b=0;
-//                            tmpColor=r+g+b;
-//                            =(0xFF << 24) | (tmpColor << 16) | (tmpColor << 8) | tmpColor;
+//                    //Create a brush (draws on surrounding pixels as well depending on the brushsize)
+//                    int brushsize=8;
+//                    for(int i=0;i<brushsize/2;i++)
+//                    {
+//                        for(int j=0;j<brushsize/2;j++)
+//                        {
+//                            Uint8 r ;
+//                            Uint8 g ;
+//                            Uint8 b ;
+//                            r=0;g=255;b=0;
+//                            Uint32 pix=SDL_MapRGB(formattedSurface->format,r,g,b);
 
-                            Uint32 pix=SDL_MapRGB(formattedSurface->format,r,g,b);
+//                            pixels[(mouseY+j) * 640 + mouseX+i] = pix;//(0xFF << 24) | (tmpColor << 16) | (tmpColor << 8) | tmpColor;;
+//                        }
+//                    }
 
-                            pixels[(mouseY+j) * 640 + mouseX+i] = pix;//(0xFF << 24) | (tmpColor << 16) | (tmpColor << 8) | tmpColor;;
-
-
-
-                        }
-                    }
-
-                    //Make sure we draw the texture and THEN..we draw on the top of it for the backbuffer lines,points (for circle,rectangle)
-                    SDL_RenderCopy(renderer, texture, NULL, NULL);
 
 
                     //Now draw the rectangle on the top
@@ -1502,18 +1669,61 @@ int main(int argc, char ** argv)
 //                    // Render rect
 //                    SDL_RenderDrawRect( renderer, &r );
 
-//                    for (int i=0;i<50;i++)
-//                    {
-//                            backbufferPixels=NULL;
-//                            backbufferPixels= (Uint32*)malloc(10*sizeof(Uint32));
-//                            SDL_RenderDrawPoint(renderer,i,i);
 
-//                            backbufferPixels = (Uint32*) realloc (backbufferPixels, i*sizeof(Uint32));
-////                            Uint32 tmpPixel=
-////                            backbufferPixels[i]=
-//                            std::cout<<i<<std::endl;
-//                            sizeofbackbufferPixels=i;
-//                    }
+                    //Line Drawing
+                    //Make sure we draw the texture and THEN..we draw on the top of it for the backbuffer lines,points (for circle,rectangle)
+                    SDL_RenderCopy(renderer, texture, NULL, NULL);
+
+
+//                    std::cout<<drawPointLine<<std::endl;
+
+//                    if (drawPointLine==TRUE)
+                    {
+                        Point currentmousePos(mouseX,mouseY);
+                        //start line point initialized just once
+                        if (!NOWDRAWING)
+                        {
+                            NOWDRAWING=TRUE;
+                            lineStart=currentmousePos;
+                        }
+
+                        std::cout<<lineStart.x<<","<<lineStart.y<<std::endl;
+
+                        //end line point
+                        lineEnd=currentmousePos;
+
+                        drawBresenhamLine(lineStart.x,lineStart.y, lineEnd.x,lineEnd.y/*343,104,243,204*/);
+
+
+//
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//                        //back buffer draw points
+//                        SDL_RenderDrawPoint(renderer,mouseX,mouseY);
+//                        SDL_Color pointcolor;
+//                        pointcolor.r=0;pointcolor.g=255;pointcolor.b=0;
+//                        Uint32 tmpPixel=SDL_MapRGB(formattedSurface->format, pointcolor.r,pointcolor.g,pointcolor.b);
+//                        backbufferPixels[mouseY * 640 + mouseX]=tmpPixel;
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                        //draw line of 50 points 0,0,to 50,50
+//                        for (int i=0;i<50;i++)
+//                        {
+//                                backbufferPixels=NULL;
+//                                backbufferPixels= (Uint32*)malloc(10*sizeof(Uint32));
+//                                SDL_SetRenderDrawColor( renderer, 0, 0, 255, 255 );
+//                                SDL_RenderDrawPoint(renderer,i,i);
+
+//                                backbufferPixels = (Uint32*) realloc (backbufferPixels, i*sizeof(Uint32));
+
+//                                SDL_Color pointcolor;
+//                                pointcolor.r=0;pointcolor.g=255;pointcolor.b=0;
+//                                Uint32 tmpPixel=SDL_MapRGB(formattedSurface->format, pointcolor.r,pointcolor.g,pointcolor.b);
+//                                backbufferPixels[mouseY * 640 + mouseX]=tmpPixel;
+//                                sizeofbackbufferPixels=i;
+//                        }
+
+                    }
+
 
 
 
@@ -1540,9 +1750,8 @@ int main(int argc, char ** argv)
 //                    }
 
 
-
                 }
-                else if(event.window.windowID==3)
+                else if(event.window.windowID==ToolsWindowId)
                 {
 
                     int mouseX = event.motion.x;
@@ -1561,7 +1770,8 @@ int main(int argc, char ** argv)
 
                     if (r==0 &&g==0 &&b==0)
                     {
-                        drawRectangle=TRUE;
+                        drawPointLine=TRUE;
+                        drawRectangle=FALSE;
 
                         r=255;g=255;b=255;
 //                        tmpColor = r + g + b;
@@ -1572,6 +1782,9 @@ int main(int argc, char ** argv)
                     }
                     else
                     {   std::cout<<"White color portion of texture"<<std::endl;
+
+                        drawPointLine=FALSE;
+                        drawRectangle=TRUE;
 
                         r=0;g=0;b=0;
                         tmpColor = r + g + b;
