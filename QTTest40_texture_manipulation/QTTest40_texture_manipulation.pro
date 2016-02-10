@@ -26,7 +26,6 @@ win32:CONFIG(release, debug|release): LIBS += -L$$PWD/lib/ -lSDL2
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/lib/ -lSDL2
 else:unix: LIBS += -L$$PWD/lib/ -lSDL2
 
-INCLUDEPATH += $$PWD/include
 DEPENDPATH += $$PWD/include
 
 

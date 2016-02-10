@@ -1343,22 +1343,37 @@ SDL_Texture * texture;
 Uint32 * pixels = new Uint32[640 * 480];
 void * pixels2;
 //Uint32 *backbufferPixels = new Uint32[640 * 480];
-Uint32 * backbufferPixels= (Uint32*)malloc(640 * 480 * sizeof(Uint32));
+Uint32 * backbufferPixels=NULL;// (Uint32*)malloc(640 * 480 * sizeof(Uint32));
 int sizeofbackbufferPixels;
 
 Uint8 tmpColor;
+
 
 //ToolBox Booleans
 typedef enum {FALSE,TRUE} boolean;
 boolean drawRectangle =FALSE;
 boolean drawPointLine =FALSE;
+boolean drawPointCircle =FALSE;
+boolean drawPointPencil =FALSE;
+boolean drawPointBrush =FALSE;
+boolean drawPointBucketFill =FALSE;
+boolean drawPointRedColor =FALSE;
+boolean drawPointBlackColor =FALSE;
+boolean drawPointEraser =FALSE;
+
 boolean NOWDRAWING =FALSE;
+
+SDL_Color colorpicked;
 
 ///////////////////////////////////////////////////////////////////
 /// \brief loadedSurface
 const char * path="toolbox.png";
 SDL_Surface* loadedSurface;
+SDL_Surface * surf;
+
 SDL_Surface* formattedSurface;
+SDL_Surface* formattedSurface2;
+
 SDL_Texture * texture2;
 
 
@@ -1373,6 +1388,165 @@ typedef struct Point
 
     int x,y;
 }p;
+
+
+#include <stack>
+typedef struct Element
+{
+    Element() {  ; }
+    Element(int _x,int _y)
+    {
+        x=_x;
+        y=_y;
+    }
+    ~Element(){}
+
+ int x;
+ int y;
+}Element;
+
+
+
+static int counter=0;
+
+void floodfill (int x,int  y, Uint32* all_pixels, Uint8 targetR,Uint8 targetG,Uint8 targetB, Uint8 replacementR ,Uint8 replacementG,Uint8 replacementB)
+{
+    std::stack<Element> stack;
+
+
+    Uint32 * tmpPixels=(Uint32*)malloc(640*480* sizeof(Uint32));
+    memcpy(tmpPixels,all_pixels, 640 * 480 * sizeof(Uint32));
+
+
+//    int pitch;
+//    void *pxs=(void *) all_pixels;
+//    SDL_LockTexture(texture,NULL,&pxs,&pitch);
+
+    Element e(x,y);
+    stack.push(e);
+
+        while( (stack.size()) > 0 )
+        {
+
+            Element e = stack.top(); stack.pop();
+            x= e.x;
+            y= e.y;
+
+//            std::cout<<"x="<<x<<", y="<<y<<std::endl;
+
+            //make sure pixel position is within the surface's boundaries
+            if  (x > 0 && x < 640 && y > 0 && y < 480)
+            {
+
+                //next pixel position
+                int index = y* 640   + x;
+
+                //Get specific pixel
+                Uint32 pixel = tmpPixels[index];
+
+                Uint8 curPixR, curPixG, curPixB;
+                //Get current r,g,b
+
+//                Uint32 *pixelformat;
+//                int w,h;
+//                SDL_QueryTexture(texture, pixelformat, NULL, &w, &h);
+
+
+
+
+                SDL_GetRGB(pixel, formattedSurface2->format , &curPixR, &curPixG, &curPixB);
+
+
+
+
+                //We only change the color picked up by the mouse at pixel location we clicked
+                // If the node's color we visit doesn't match the color we target to change we simply continue
+                if( (curPixR!=targetR || curPixG!=targetG || curPixB!=targetB) )
+                {
+                        continue;
+                }
+                if( (curPixR==replacementR && curPixG==replacementG && curPixB==replacementB) )
+                {
+                        break;
+                }
+
+                //if we have just hit the pixel that we intend to change the colour of
+                {//if we have just hit the pixel that we intend to change the colour of
+//                {
+                    //Change the current pixel to the values specified by newRed,newGreen,newBlue
+//                    pixel = (0xFF << 24) | (replacementR << 16) | (replacementG << 8) | replacementB;
+                    //Update the surface's pixels
+//                    all_pixels[y * 640 + x] = pixel;
+
+
+                    SDL_Color c;c.r=replacementR;c.g=replacementG;c.b=replacementB;
+                    Uint32 tmpPixel=SDL_MapRGB(formattedSurface2->format,c.r,c.g,c.b );
+
+//                    for(int i =0;i<640;i++)
+//                        for(int j =0;j<480;j++)
+                            tmpPixels[y * 640 + x] = tmpPixel;
+
+
+                    stack.push( Element(x + 1, y) );  // right
+                    stack.push( Element(x - 1, y) );  // left
+                    stack.push( Element(x, y + 1) );  // down
+                    stack.push( Element(x, y - 1) );  // up
+
+                }
+            }
+    }
+
+        memcpy(all_pixels,tmpPixels,640*480* sizeof(Uint32));
+        delete tmpPixels;
+
+//        SDL_UnlockTexture(texture);
+
+
+}
+
+
+////Recursive 4-way floodfill, crashes if recursion stack is full
+//void floodFill4(int x, int y, Uint32* all_pixels, Uint8 targetR,Uint8 targetG,Uint8 targetB, Uint8 replacementR ,Uint8 replacementG,Uint8 replacementB)
+//{
+//    //Make sure we 're within the bounbaries of our surface & that the current pixel's color
+//    //  is 0,0,0,
+
+
+//    if( x >= 0 && x < 640 && y >= 0 && y < 480 )
+//    {
+//        //next pixel position
+//        int index = y* 640  + x;
+
+//        //Get specific pixel
+//        Uint32 pixel = all_pixels[index];
+
+//        Uint8 curPixR, curPixG, curPixB;
+//        //Get current r,g,b
+//        SDL_GetRGB(pixel, formattedSurface->format, &curPixR, &curPixG, &curPixB);
+
+//        // the node's color we visit must match match the color                                 the node's color we visit must match not have the same
+//        // we intend to change (looking for in ex. white pixels)                                 color as the new color (in ex. "don't make it")
+//        if( (curPixR==targetR && curPixG==targetG && curPixB==targetB) && (curPixR!=replacementR || curPixG!=replacementG || curPixB!=replacementB))
+//        {
+//            //Change the current pixel to the values specified by newRed,newGreen,newBlue
+////            pixel = (0xFF << 24) | (replacementR << 16) | (replacementG << 8) | replacementB;
+////            //Update the surface's pixels
+////            all_pixels[y * 640+ x] = pixel;
+
+//            SDL_Color c;c.r=replacementR;c.g=replacementG;c.b=replacementB;
+//            Uint32 tmpPixel=SDL_MapRGB(formattedSurface->format,c.r,c.g,c.b );
+//            all_pixels[y * 640+ x] = tmpPixel;
+
+
+//            floodFill4(x + 1, y,     all_pixels,  targetR,targetG,targetB, replacementR,replacementG,replacementB );
+//            floodFill4(x - 1, y,     all_pixels,  targetR,targetG,targetB, replacementR,replacementG,replacementB );
+//            floodFill4(x,     y + 1, all_pixels,  targetR,targetG,targetB, replacementR,replacementG,replacementB );
+//            floodFill4(x,     y - 1, all_pixels,  targetR,targetG,targetB, replacementR,replacementG,replacementB );
+//        }
+
+//    }
+//}
+
 
 
 
@@ -1432,19 +1606,14 @@ void drawBresenhamLine(int x,int y,int x2,int y2)
     //clear our buffer constantly so as to end up with only 1 line
 
 
-//    backbufferPixels=NULL;
-//    Uint32 *backbufferPixels = new Uint32[640 * 480];
-//    backbufferPixels= (Uint32*)malloc(640 * 480 * sizeof(Uint32));
-
 
     //Now create the backbuffercopy of the original pixel array (our board)
     memcpy(backbufferPixels, pixels,  640 * 480 * sizeof(Uint32));
 
     for(int i=0;i<=longest;i++)
     {
-        SDL_Color pointcolor;
-        pointcolor.r=0;pointcolor.g=255;pointcolor.b=0;
-        Uint32 tmpPixel=SDL_MapRGB(formattedSurface->format, pointcolor.r,pointcolor.g,pointcolor.b);
+
+        Uint32 tmpPixel=SDL_MapRGB(formattedSurface2->format, colorpicked.r,colorpicked.g,colorpicked.b);
         backbufferPixels[lineArray[i].y * 640 + lineArray[i].x]=tmpPixel;
     }
 
@@ -1505,6 +1674,8 @@ void drawBresenhamLine(int x,int y,int x2,int y2)
 
 }
 
+
+
 int main(int argc, char ** argv)
 {
 
@@ -1515,7 +1686,7 @@ int main(int argc, char ** argv)
 
     int drawingWindowId=SDL_GetWindowID(window);
     SDL_Window * window2 = SDL_CreateWindow("Tools",
-        SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 200, 200, 0);
+        SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 100, 100, 0);
     int ToolsWindowId=SDL_GetWindowID(window2);
 
 
@@ -1524,6 +1695,8 @@ int main(int argc, char ** argv)
     renderer2 = SDL_CreateRenderer(window2, -1, 0);
     texture = SDL_CreateTexture(renderer,
         SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STATIC, 640, 480);
+
+
 
     loadedSurface=IMG_Load( /*path.c_str() */ path);
 
@@ -1546,7 +1719,7 @@ int main(int argc, char ** argv)
             else
             {
                 //Create blank streamable texture
-                texture2 = SDL_CreateTexture( renderer2,SDL_GetWindowPixelFormat( window2 ), SDL_TEXTUREACCESS_STREAMING, 200, 200 );
+                texture2 = SDL_CreateTexture( renderer2,SDL_GetWindowPixelFormat( window2 ), SDL_TEXTUREACCESS_STREAMING, 100, 100 );
                 if( texture2 == NULL )
                 {
                     printf( "Unable to create blank texture! SDL Error: %s\n", SDL_GetError() );
@@ -1572,18 +1745,38 @@ int main(int argc, char ** argv)
         }
     //////////////////////////////////////////////////////////////////
 
-//    SDL_Texture * texture2 = SDL_CreateTexture(renderer2,  SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STATIC, 200, 200);
-//    Uint32 * pixels2 = new Uint32[200 * 200];
+
+    surf = SDL_CreateRGBSurface(0,640,480,32,0,0,0,0);
+    formattedSurface2 = SDL_ConvertSurfaceFormat( surf, SDL_PIXELFORMAT_ARGB8888, NULL );
+    if( formattedSurface2 == NULL )
+    {
+        printf( "Unable to convert loaded surface to display format! SDL Error: %s\n", SDL_GetError() );
+    }
+    else
+    {
+            int pitch;
+            void *pxs=(void*)pixels;
+            //Lock texture for manipulation
+            SDL_LockTexture( texture, NULL, &pxs, &pitch );
+
+            //Copy loaded/formatted surface pixels
+            memcpy( pixels, formattedSurface2->pixels, 640 *480 );
+
+            //Unlock texture to update
+            SDL_UnlockTexture( texture );
+
+    }
+    //Get rid of old loaded surface
+    SDL_FreeSurface( surf );
+
 
     memset(pixels, 255, 640 * 480 * sizeof(Uint32));
 
-    //Now create the backbuffercopy of the original pixel array (our board)
-    memcpy(backbufferPixels, pixels,  640 * 480 * sizeof(Uint32));
 
     while (!quit)
     {
         SDL_UpdateTexture(texture, NULL, pixels, 640 * sizeof(Uint32));
-        SDL_UpdateTexture(texture2, NULL, pixels2, 200 * sizeof(Uint32));
+        SDL_UpdateTexture(texture2, NULL, pixels2, 100 * sizeof(Uint32));
         SDL_PollEvent(&event);
 
         SDL_Rect DestR;
@@ -1596,18 +1789,23 @@ int main(int argc, char ** argv)
         {
         case SDL_MOUSEBUTTONUP:
             if (event.button.button == SDL_BUTTON_LEFT)
-            {   leftMouseButtonDown = false;
-
-                //now draw the actual line of points
-
-                Uint32 *pxls=(Uint32*)backbufferPixels;
+            {
+                leftMouseButtonDown = false;
 
                 //Decision made- Now mouse is up, so copy to original 'pixel' data the buffered data.
-                memcpy(pixels,backbufferPixels,640*480*sizeof(Uint32));
+                std::cout<<"drawPointLine="<<drawPointLine<<std::endl;
+
+                if (drawPointLine && backbufferPixels!=NULL)
+                {
+                    memcpy(pixels,backbufferPixels,640*480*sizeof(Uint32));
+
+                    delete backbufferPixels;
+                    backbufferPixels=NULL;
+                }
+
 
 
                 NOWDRAWING=FALSE;
-//                drawPointLine=FALSE;
 
 //                for(int i=0;i<sizeofbackbufferPixels;i++)
 //                {
@@ -1632,29 +1830,10 @@ int main(int argc, char ** argv)
             if (leftMouseButtonDown)
             {
 
-
                 if(event.window.windowID==drawingWindowId)
                 {
                     int mouseX = event.motion.x;
                     int mouseY = event.motion.y;
-
-
-
-//                    //Create a brush (draws on surrounding pixels as well depending on the brushsize)
-//                    int brushsize=8;
-//                    for(int i=0;i<brushsize/2;i++)
-//                    {
-//                        for(int j=0;j<brushsize/2;j++)
-//                        {
-//                            Uint8 r ;
-//                            Uint8 g ;
-//                            Uint8 b ;
-//                            r=0;g=255;b=0;
-//                            Uint32 pix=SDL_MapRGB(formattedSurface->format,r,g,b);
-
-//                            pixels[(mouseY+j) * 640 + mouseX+i] = pix;//(0xFF << 24) | (tmpColor << 16) | (tmpColor << 8) | tmpColor;;
-//                        }
-//                    }
 
 
 
@@ -1670,15 +1849,17 @@ int main(int argc, char ** argv)
 //                    SDL_RenderDrawRect( renderer, &r );
 
 
-                    //Line Drawing
-                    //Make sure we draw the texture and THEN..we draw on the top of it for the backbuffer lines,points (for circle,rectangle)
-                    SDL_RenderCopy(renderer, texture, NULL, NULL);
+
 
 
 //                    std::cout<<drawPointLine<<std::endl;
 
-//                    if (drawPointLine==TRUE)
+                    if (drawPointLine==TRUE)
                     {
+                        //Line Drawing
+                        //Make sure we draw the texture and THEN..we draw on the top of it for the backbuffer lines,points (for circle,rectangle)
+                        SDL_RenderCopy(renderer, texture, NULL, NULL);
+
                         Point currentmousePos(mouseX,mouseY);
                         //start line point initialized just once
                         if (!NOWDRAWING)
@@ -1692,7 +1873,12 @@ int main(int argc, char ** argv)
                         //end line point
                         lineEnd=currentmousePos;
 
-                        drawBresenhamLine(lineStart.x,lineStart.y, lineEnd.x,lineEnd.y/*343,104,243,204*/);
+                        //Allocate some memory for the backbufferPixels
+                        backbufferPixels= (Uint32*)malloc(640 * 480 * sizeof(Uint32));
+                        //Now create the backbuffercopy of the original pixel array (our main drawing board)
+                        memcpy(backbufferPixels, pixels,  640 * 480 * sizeof(Uint32));
+
+                        drawBresenhamLine(lineStart.x,lineStart.y, lineEnd.x,lineEnd.y);
 
 
 //
@@ -1722,6 +1908,95 @@ int main(int argc, char ** argv)
 //                                sizeofbackbufferPixels=i;
 //                        }
 
+                    }
+                    else if (drawRectangle==TRUE)
+                    {
+
+                    }
+                    else if (drawPointCircle==TRUE)
+                    {
+
+                    }
+                    else if (drawPointBucketFill==TRUE)
+                    {
+                        if (!NOWDRAWING)
+                        {
+                            NOWDRAWING=TRUE;
+
+                            if(mouseX!=-1 && mouseY!=-1)
+                            {
+                                Uint8 red,green,blue;
+                                Uint8 newRed,newGreen,newBlue;
+
+                                //Grab the color of the pixel on the spot and change the pixel's that match this color
+                                int index =(mouseY) * 640 + mouseX;
+                                Uint32 pixel = pixels[index];
+
+                                SDL_GetRGB(pixel, formattedSurface2->format, &red, &green, &blue);
+
+                                SDL_Color c;c.r=red;c.g=green;c.b=blue;
+
+
+                                //Flood-Fill with Yellow Colour
+                                newRed=colorpicked.r;
+                                newGreen=colorpicked.g;
+                                newBlue=colorpicked.b;
+                                SDL_Color nc;nc.r=newRed;nc.g=newGreen;nc.b=newBlue;
+
+
+    //                            floodFill4(mouseX,mouseY,pixels,red,green,blue, newRed,newGreen,newBlue);
+                                floodfill(mouseX,mouseY,pixels, c.r,c.g,c.b, nc.r,nc.g,nc.b);
+
+                            }
+                        }
+
+                    }
+                    else if (drawPointPencil==TRUE)
+                    {
+                        //Line Drawing
+                        //Make sure we draw the texture and THEN..we draw on the top of it for the backbuffer lines,points (for circle,rectangle)
+                        SDL_RenderCopy(renderer, texture, NULL, NULL);
+
+                        Uint32 pix=SDL_MapRGB(formattedSurface2->format,colorpicked.r,colorpicked.g,colorpicked.b);
+                        pixels[(mouseY) * 640 + mouseX] = pix;//(0xFF << 24) | (tmpColor << 16) | (tmpColor << 8) | tmpColor;;
+
+                    }
+                    else if (drawPointBrush==TRUE)
+                    {
+                        //Line Drawing
+                        //Make sure we draw the texture and THEN..we draw on the top of it for the backbuffer lines,points (for circle,rectangle)
+                        SDL_RenderCopy(renderer, texture, NULL, NULL);
+
+                        //Create a brush (draws on surrounding pixels as well depending on the brushsize)
+                        int brushsize=8;
+                        for(int i=0;i<brushsize/2;i++)
+                        {
+                            for(int j=0;j<brushsize/2;j++)
+                            {
+                                Uint32 pix=SDL_MapRGB(formattedSurface2->format,colorpicked.r,colorpicked.g,colorpicked.b);
+
+                                pixels[(mouseY+j) * 640 + mouseX+i] = pix;
+                            }
+                        }
+                    }
+                    else if (drawPointEraser==TRUE)
+                    {
+                        //Line Drawing
+                        //Make sure we draw the texture and THEN..we draw on the top of it for the backbuffer lines,points (for circle,rectangle)
+                        SDL_RenderCopy(renderer, texture, NULL, NULL);
+
+
+                        //Create a brush (draws on surrounding pixels as well depending on the brushsize)
+                        int brushsize=8;
+                        for(int i=0;i<brushsize/2;i++)
+                        {
+                            for(int j=0;j<brushsize/2;j++)
+                            {
+                                Uint32 pix=SDL_MapRGB(formattedSurface2->format,colorpicked.r,colorpicked.g,colorpicked.b);
+
+                                pixels[(mouseY+j) * 640 + mouseX+i] = pix;//(0xFF << 24) | (tmpColor << 16) | (tmpColor << 8) | tmpColor;;
+                            }
+                        }
                     }
 
 
@@ -1756,42 +2031,178 @@ int main(int argc, char ** argv)
 
                     int mouseX = event.motion.x;
                     int mouseY = event.motion.y;
-                    //set it to black
 
+                    //Declare temporary color channels
                     Uint8 r ;
                     Uint8 g ;
                     Uint8 b ;
-                    //convert void * to Uint32  array
+
+                    //convert void * to Uint32  array, for direct pixel array manipulation
                     Uint32 *pxls= (Uint32*)pixels2;
-                    //Get a specific pixel
-//                    Uint32 p=pxls[mouseY * 200 + mouseX];
+
+                    //Get a specific pixel and check its color
+                    Uint32 p=pxls[mouseY * 100 + mouseX];
+                    SDL_GetRGB(p,formattedSurface->format, &r,&g,&b);;
 
                     std::cout<<"mouseX="<<mouseX<<" , "<<"mouseY="<<mouseY<<std::endl;
 
-                    if (r==0 &&g==0 &&b==0)
+                    //Select Line Drawing Tool based on the color of the pixel clicked
+//                    if (r==0 &&g==0 &&b==0)
+
+                    //Select Line Drawing Tool based on which portion of the texture the mouse clicks
+
+                    //RECTANGLE
+                    if (mouseX>0 && mouseX<30 && mouseY>0 && mouseY<30)
                     {
-                        drawPointLine=TRUE;
-                        drawRectangle=FALSE;
-
-                        r=255;g=255;b=255;
-//                        tmpColor = r + g + b;
-                        std::cout<<"Black color portion of texture"<<std::endl;
-                        Uint32 pix=SDL_MapRGB(formattedSurface->format,r,g,b);
-//                        pxls[mouseY * 200 + mouseX] = 255;
-                        pxls[mouseY * 200 + mouseX] = SDL_MapRGB(formattedSurface->format,r,g,b);//(0xFF << 24) | (tmpColor << 16) | (tmpColor << 8) | tmpColor;
-                    }
-                    else
-                    {   std::cout<<"White color portion of texture"<<std::endl;
-
-                        drawPointLine=FALSE;
+                        std::cout<<"RECTANGLE portion of texture"<<std::endl;
                         drawRectangle=TRUE;
+                        drawPointLine=FALSE;
+                        drawPointBrush=FALSE;
+                        drawPointBucketFill=FALSE;
+                        drawPointCircle=FALSE;
+                        drawPointEraser=FALSE;
+                        drawPointPencil=FALSE;
+                        drawPointRedColor =FALSE;
+                        drawPointBlackColor =FALSE;
 
-                        r=0;g=0;b=0;
-                        tmpColor = r + g + b;
 
-//                        pxls[mouseY * 200 + mouseX] = 0;
-                        pxls[mouseY * 200 + mouseX] = SDL_MapRGB(formattedSurface->format,r,g,b);;//(0xFF << 24) | (tmpColor << 16) | (tmpColor << 8) | tmpColor;
+
+//                        r=255;g=255;b=255;
+//                        tmpColor = r + g + b;
+//                        pxls[mouseY * 100 + mouseX] = SDL_MapRGB(formattedSurface->format,r,g,b);//(0xFF << 24) | (tmpColor << 16) | (tmpColor << 8) | tmpColor;
                     }
+                    //CIRCLE
+                    else if (mouseX>30 && mouseX<60 && mouseY>0 && mouseY<30)
+                    {
+                        std::cout<<"CIRCLE portion of texture"<<std::endl;
+
+                        drawRectangle=FALSE;
+                        drawPointLine=FALSE;
+                        drawPointBrush=FALSE;
+                        drawPointBucketFill=FALSE;
+                        drawPointCircle=TRUE;
+                        drawPointEraser=FALSE;
+                        drawPointPencil=FALSE;
+                        drawPointRedColor =FALSE;
+                        drawPointBlackColor =FALSE;
+
+//                        r=0;g=0;b=0;
+//                        tmpColor = r + g + b;
+//                        pxls[mouseY * 100 + mouseX] = SDL_MapRGB(formattedSurface->format,r,g,b);;//(0xFF << 24) | (tmpColor << 16) | (tmpColor << 8) | tmpColor;
+                    }
+                    //BUCKET FILL
+                    else if (mouseX>60 && mouseX<100 && mouseY>0 && mouseY<30)
+                    {
+                        std::cout<<"BUCKET FILL portion of texture"<<std::endl;
+
+                        drawRectangle=FALSE;
+                        drawPointLine=FALSE;
+                        drawPointBrush=FALSE;
+                        drawPointBucketFill=TRUE;
+                        drawPointCircle=FALSE;
+                        drawPointEraser=FALSE;
+                        drawPointPencil=FALSE;
+                        drawPointRedColor =FALSE;
+                        drawPointBlackColor =FALSE;
+                    }
+                    //LINE
+                    else if (mouseX>0 && mouseX<30 && mouseY>30 && mouseY<60)
+                    {
+                        std::cout<<"LINE portion of texture"<<std::endl;
+
+                        drawRectangle=FALSE;
+                        drawPointLine=TRUE;
+                        drawPointBrush=FALSE;
+                        drawPointBucketFill=FALSE;
+                        drawPointCircle=FALSE;
+                        drawPointEraser=FALSE;
+                        drawPointPencil=FALSE;
+                        drawPointRedColor =FALSE;
+                        drawPointBlackColor =FALSE;
+                    }
+                    //PENCIL
+                    else if (mouseX>30 && mouseX<60 && mouseY>30 && mouseY<60)
+                    {
+                        std::cout<<"PENCIL portion of texture"<<std::endl;
+
+                        drawRectangle=FALSE;
+                        drawPointLine=FALSE;
+                        drawPointBrush=FALSE;
+                        drawPointBucketFill=FALSE;
+                        drawPointCircle=FALSE;
+                        drawPointEraser=FALSE;
+                        drawPointPencil=TRUE;
+                        drawPointRedColor =FALSE;
+                        drawPointBlackColor =FALSE;
+                    }
+                    //BRUSH
+                    else if (mouseX>60 && mouseX<100 && mouseY>30 && mouseY<60)
+                    {
+                        std::cout<<"BRUSH portion of texture"<<std::endl;
+
+                        drawRectangle=FALSE;
+                        drawPointLine=FALSE;
+                        drawPointBrush=TRUE;
+                        drawPointBucketFill=FALSE;
+                        drawPointCircle=FALSE;
+                        drawPointEraser=FALSE;
+                        drawPointPencil=FALSE;
+                        drawPointRedColor =FALSE;
+                        drawPointBlackColor =FALSE;
+                    }
+                    //RED COLOR
+                    else if (mouseX>0 && mouseX<30 && mouseY>60 && mouseY<100)
+                    {
+                        std::cout<<"RED COLOR portion of texture"<<std::endl;
+
+                        drawRectangle=FALSE;
+                        drawPointLine=FALSE;
+                        drawPointBrush=FALSE;
+                        drawPointBucketFill=FALSE;
+                        drawPointCircle=FALSE;
+                        drawPointEraser=FALSE;
+                        drawPointPencil=FALSE;
+                        drawPointRedColor =TRUE;
+                        drawPointBlackColor =FALSE;
+
+                        colorpicked.r=255;colorpicked.g=0;colorpicked.b=0;
+                    }
+                    //BLACK COLOR
+                    else if (mouseX>30 && mouseX<60 && mouseY>60 && mouseY<100)
+                    {
+                        std::cout<<"BLACK COLOR portion of texture"<<std::endl;
+
+                        drawRectangle=FALSE;
+                        drawPointLine=FALSE;
+                        drawPointBrush=FALSE;
+                        drawPointBucketFill=FALSE;
+                        drawPointCircle=FALSE;
+                        drawPointEraser=FALSE;
+                        drawPointPencil=FALSE;
+                        drawPointRedColor =FALSE;
+                        drawPointBlackColor =TRUE;
+
+                        colorpicked.r=0;colorpicked.g=0;colorpicked.b=0;
+                    }
+                    //ERASER
+                    else if (mouseX>60 && mouseX<100 && mouseY>60 && mouseY<100)
+                    {
+                        std::cout<<"ERASER portion of texture"<<std::endl;
+
+                        drawRectangle=FALSE;
+                        drawPointLine=FALSE;
+                        drawPointBrush=FALSE;
+                        drawPointBucketFill=FALSE;
+                        drawPointCircle=FALSE;
+                        drawPointEraser=TRUE;
+                        drawPointPencil=FALSE;
+                        drawPointRedColor =FALSE;
+                        drawPointBlackColor =FALSE;
+
+                        colorpicked.r=255;colorpicked.g=255;colorpicked.b=255;
+                    }
+
+
                 }
             }
             break;
@@ -1857,6 +2268,10 @@ int main(int argc, char ** argv)
         SDL_RenderCopy(renderer2, texture2, NULL, NULL);
         SDL_RenderPresent(renderer2);
     }
+
+
+    SDL_FreeSurface( formattedSurface );
+    SDL_FreeSurface( formattedSurface2 );
 
     delete[] pixels;
     delete[] pixels2;
