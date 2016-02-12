@@ -1325,7 +1325,7 @@
 
 #include <iostream>
 #include <SDL.h>
-
+#include <math.h>
 
 bool leftMouseButtonDown = false;
 bool quit = false;
@@ -1376,6 +1376,108 @@ SDL_Surface* formattedSurface2;
 
 SDL_Texture * texture2;
 
+
+// Main Mid-Point Circle Algorithm Helper Functions
+void drawpixel(int x, int y, Uint32 * all_pixels, Uint32 ** tmpPixels/*, SDL_Surface * gPNGSurface, SDL_Window * gWindow, SDL_Surface * gScreenSurface */)
+{
+
+
+    if(x>0 && x<640 && y>0 && y<480) //keep safe image boundaries
+    {
+        //next pixel position
+        int index = y* 640   + x;
+
+        //Get specific pixel
+        Uint32 pixel = (*tmpPixels)[index];
+
+        //Change the current pixel to the values specified by newRed,newGreen,newBlue
+
+        SDL_Color c;c.r=colorpicked.r;c.g=colorpicked.g;c.b=colorpicked.b;
+        Uint32 tmpPixel=SDL_MapRGB(formattedSurface2->format,c.r,c.g,c.b );
+
+        //Update the buffer surface's pixels
+        (*tmpPixels)[y * 640 + x] = tmpPixel;
+
+
+        SDL_RenderDrawPoint(renderer,x,y);
+
+
+
+//        pixel = (0xFF << 24) | (255 << 16) | (0 << 8) | 0;
+
+//        all_pixels[y * gPNGSurface->w + x] = pixel;
+    }
+
+
+
+    //Apply the PNG image
+//    SDL_BlitSurface( gPNGSurface, NULL, gScreenSurface, NULL );
+
+    //Update the surface
+//    SDL_UpdateWindowSurface( gWindow );
+
+}
+
+
+void callDrawPixel(int xc,int yc,int x,int y, Uint32 * all_pixels, Uint32 ** tmpPixels/*, SDL_Surface * gPNGSurface, SDL_Window * gWindow, SDL_Surface * gScreenSurface*/ )
+{
+
+   // Draw 45 arcs from bottom counterclockwise
+   drawpixel(xc+x, yc+y, all_pixels, tmpPixels/*,gPNGSurface,gWindow,gScreenSurface*/);
+   drawpixel(xc+x, yc-y, all_pixels, tmpPixels/*gPNGSurface,gWindow,gScreenSurface*/);
+   drawpixel(xc+y, yc+x, all_pixels, tmpPixels/*,gPNGSurface,gWindow,gScreenSurface*/);
+   drawpixel(xc+y, yc-x, all_pixels, tmpPixels/*,gPNGSurface,gWindow,gScreenSurface*/);
+
+   drawpixel(xc-x, yc-y, all_pixels, tmpPixels/*,gPNGSurface,gWindow,gScreenSurface*/);
+   drawpixel(xc-x, yc+y, all_pixels, tmpPixels/*,gPNGSurface,gWindow,gScreenSurface*/);
+   drawpixel(xc-y, yc-x, all_pixels, tmpPixels/*,gPNGSurface,gWindow,gScreenSurface*/);
+   drawpixel(xc-y, yc+x, all_pixels, tmpPixels/*,gPNGSurface,gWindow,gScreenSurface*/);
+}
+
+
+
+
+void drawMultipleInnerCircles(int r, int x, int y, int yc, int xc, float Pk, Uint32 * all_pixels, Uint32 ** tmpPixels, boolean &changeLocation, boolean &enterWhile/*, SDL_Surface *gPNGSurface, SDL_Window *gWindow, SDL_Surface * gScreenSurface */)
+{
+//    while (r>=0 && enterWhile)
+    {
+        // main drawing pixels loop
+        while(x<y && enterWhile)
+        {
+            if (Pk<0)
+            {
+                x=x+1;
+                Pk=Pk+(2*x)+1;
+            }
+            else
+            {
+                x=x+1;
+                y=y-1;
+                Pk=Pk+(2*x)-(2*y)+1;
+            }
+            callDrawPixel(xc,yc,x,y, all_pixels, tmpPixels/*,gPNGSurface,gWindow,gScreenSurface*/);
+
+        }
+
+        //allow for a second circle to be created
+    //                        enterWhile=false;
+
+        changeLocation=TRUE;
+        x=1;
+        y=--r;
+        Pk=1-r;
+    }
+
+//    if (changeLocation)
+//    {
+//        r=50;
+//        x=1;
+//        y=--r;
+//        Pk=1-r;
+//        changeLocation=false;
+//    }
+
+}
 
 
 typedef struct Point
@@ -1801,6 +1903,15 @@ int main(int argc, char ** argv)
 
                     delete backbufferPixels;
                     backbufferPixels=NULL;
+
+                }
+
+                if (drawPointCircle && backbufferPixels!=NULL)
+                {
+                    memcpy(pixels,backbufferPixels,640*480*sizeof(Uint32));
+
+                    delete backbufferPixels;
+                    backbufferPixels=NULL;
                 }
 
 
@@ -1874,7 +1985,15 @@ int main(int argc, char ** argv)
                         lineEnd=currentmousePos;
 
                         //Allocate some memory for the backbufferPixels
-                        backbufferPixels= (Uint32*)malloc(640 * 480 * sizeof(Uint32));
+                        if (backbufferPixels==NULL)
+                        {
+                            backbufferPixels=(Uint32*)malloc(640*480* sizeof(Uint32));
+                        }
+                        else
+                        {
+                            memset(backbufferPixels,0,640*480* sizeof(Uint32));
+                        }
+
                         //Now create the backbuffercopy of the original pixel array (our main drawing board)
                         memcpy(backbufferPixels, pixels,  640 * 480 * sizeof(Uint32));
 
@@ -1916,6 +2035,52 @@ int main(int argc, char ** argv)
                     else if (drawPointCircle==TRUE)
                     {
 
+                        //Line Drawing
+                        //Make sure we draw the texture and THEN..we draw on the top of it for the backbuffer lines,points (for circle,rectangle)
+                        SDL_RenderCopy(renderer, texture, NULL, NULL);
+
+                        Point currentmousePos(mouseX,mouseY);
+                        //start line point initialized just once
+                        if (!NOWDRAWING)
+                        {
+                            NOWDRAWING=TRUE;
+                            lineStart=currentmousePos;
+                        }
+                        //end line point
+                        lineEnd=currentmousePos;
+
+                        //Now we need to calculate r based on the lineStart,lineEnd
+//                        if (!(lineEnd.x-lineStart.x==0 && lineEnd.y-lineStart.y==0))
+                        {
+                            //find length of r based on 2 points
+                            int r=sqrt( pow((lineEnd.x-lineStart.x),2) + pow((lineEnd.y-lineStart.y),2) );
+
+                            boolean enterWhile=TRUE;
+                            boolean changeLocation=FALSE;
+//                            int r=50;
+                            //mid circle point found
+                            int xc=(lineEnd.x+lineStart.x)/2;//initial x,y values
+                            int yc=(lineEnd.y+lineStart.y)/2;//initial x,y values
+                            int x=1;
+                            int y=r;
+                            float Pk=1-r;
+
+                            if (backbufferPixels==NULL)
+                            {
+                                backbufferPixels=(Uint32*)malloc(640*480* sizeof(Uint32));
+                            }
+                            else
+                            {
+                                memset(backbufferPixels,0,640*480* sizeof(Uint32));
+                            }
+
+                            memcpy(backbufferPixels,pixels, 640 * 480 * sizeof(Uint32));
+
+                            drawMultipleInnerCircles(r, x,  y, yc ,  xc, Pk, pixels, &backbufferPixels, changeLocation, enterWhile/*, gPNGSurface, gWindow, gScreenSurface*/);
+
+
+
+                        }
                     }
                     else if (drawPointBucketFill==TRUE)
                     {
