@@ -1398,7 +1398,7 @@ void drawpixel(int x, int y, Uint32 * all_pixels, Uint32 ** tmpPixels/*, SDL_Sur
         //Update the buffer surface's pixels
         (*tmpPixels)[y * 640 + x] = tmpPixel;
 
-
+        SDL_SetRenderDrawColor( renderer, colorpicked.a, colorpicked.r, colorpicked.g, colorpicked.b);
         SDL_RenderDrawPoint(renderer,x,y);
 
 
@@ -2371,8 +2371,10 @@ int main(int argc, char ** argv)
                 }
             }
             break;
-        case SDL_QUIT:
-            quit = true;
+
+            case SDL_KEYDOWN:
+                if(event.key.keysym.sym==SDLK_ESCAPE)
+                    quit = true;
             break;
         }
 
@@ -2443,6 +2445,9 @@ int main(int argc, char ** argv)
     SDL_DestroyTexture(texture);
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
+    SDL_DestroyTexture(texture2);
+    SDL_DestroyRenderer(renderer2);
+    SDL_DestroyWindow(window2);
     SDL_Quit();
 
     return 0;
