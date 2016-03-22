@@ -1995,7 +1995,7 @@ int main(int argc, char ** argv)
                         }
 
                         //Now create the backbuffercopy of the original pixel array (our main drawing board)
-                        memcpy(backbufferPixels, pixels,  640 * 480 * sizeof(Uint32));
+//                        memcpy(backbufferPixels, pixels,  640 * 480 * sizeof(Uint32));
 
                         drawBresenhamLine(lineStart.x,lineStart.y, lineEnd.x,lineEnd.y);
 
