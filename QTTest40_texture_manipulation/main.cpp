@@ -15,24 +15,24 @@
 
 //    IMG_Init(IMG_INIT_JPG);
 
-//    SDL_Window * window = SDL_CreateWindow("SDL2 Grayscale",
+//    SDL_Window * drawingWindow = SDL_CreateWindow("SDL2 Grayscale",
 
-//        SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 640, 480, 0);
+//        SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, mainwindowWidth, mainwindowHeight, 0);
 
-//    SDL_Renderer * renderer = SDL_CreateRenderer(window, -1, 0);
+//    SDL_Renderer * mainwindowRenderer = SDL_CreateRenderer(drawingWindow, -1, 0);
 
 //    SDL_Surface * image = IMG_Load("antipaxoi.png");
 //    image = SDL_ConvertSurfaceFormat(image, SDL_PIXELFORMAT_ARGB8888, 0);
 //    Uint32 * pixels = (Uint32 *)image->pixels;
 
 
-////    SDL_Texture * texture = SDL_CreateTextureFromSurface(renderer,image);
-//    SDL_Texture * texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STATIC, image->w, image->h);
+////    SDL_Texture * mainwindowTexture = SDL_CreateTextureFromSurface(mainwindowRenderer,image);
+//    SDL_Texture * mainwindowTexture = SDL_CreateTexture(mainwindowRenderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STATIC, image->w, image->h);
 
 
 //    while (!quit)
 //    {
-//        SDL_UpdateTexture(texture, NULL, image->pixels, image->w * sizeof(Uint32));
+//        SDL_UpdateTexture(mainwindowTexture, NULL, image->pixels, image->w * sizeof(Uint32));
 
 //        SDL_WaitEvent(&event);
 
@@ -99,19 +99,19 @@
 
 //        }
 
-//        SDL_RenderCopy(renderer, texture, NULL, NULL);
+//        SDL_RenderCopy(mainwindowRenderer, mainwindowTexture, NULL, NULL);
 
-//        SDL_RenderPresent(renderer);
+//        SDL_RenderPresent(mainwindowRenderer);
 
 //    }
 
-//    SDL_DestroyTexture(texture);
+//    SDL_DestroyTexture(mainwindowTexture);
 
 //    SDL_FreeSurface(image);
 
-//    SDL_DestroyRenderer(renderer);
+//    SDL_DestroyRenderer(mainwindowRenderer);
 
-//    SDL_DestroyWindow(window);
+//    SDL_DestroyWindow(drawingWindow);
 
 //    IMG_Quit();
 
@@ -174,10 +174,10 @@
 //        //Deallocates memory
 //        ~LTexture();
 
-//        //Loads image at specified path
-//        bool loadFromFile( std::string path );
+//        //Loads image at specified toolPath
+//        bool loadFromFile( std::string toolPath );
 
-//        //Loads texture
+//        //Loads mainwindowTexture
 //        bool loadTexture();
 
 //        #ifdef _SDL_TTF_H
@@ -185,7 +185,7 @@
 //        bool loadFromRenderedText(std::string textureText, SDL_Color textColor , int x, int y);
 //        #endif
 
-//        //Deallocates texture
+//        //Deallocates mainwindowTexture
 //        void free();
 
 //        //Set color modulation
@@ -197,7 +197,7 @@
 //        //Set alpha modulation
 //        void setAlpha( Uint8 alpha );
 
-//        //Renders texture at given point
+//        //Renders mainwindowTexture at given point
 //        void render( int x, int y, SDL_Rect* clip = NULL, double angle = 0.0, SDL_Point* center = NULL, SDL_RendererFlip flip = SDL_FLIP_NONE );
 
 //        void update( );
@@ -214,7 +214,7 @@
 
 //        int getPitch();
 
-//        //The actual hardware texture
+//        //The actual hardware mainwindowTexture
 //        SDL_Texture* mTexture;
 //        SDL_Texture* mToolsTexture;
 
@@ -231,7 +231,7 @@
 //        int mHeight;
 //};
 
-////Starts up SDL and creates window
+////Starts up SDL and creates drawingWindow
 //bool init();
 
 ////Loads media
@@ -240,18 +240,18 @@
 ////Frees media and shuts down SDL
 //void close();
 
-////The window we'll be rendering to
+////The drawingWindow we'll be rendering to
 //SDL_Window* gWindow = NULL;
 //SDL_Window* toolsWindow = NULL;
 
-////The window renderer
+////The drawingWindow mainwindowRenderer
 //SDL_Renderer* gRenderer = NULL;
-//SDL_Renderer* gRenderer2 = NULL;
+//SDL_Renderer* gtoolsRenderer = NULL;
 
 
 ////Scene textures
 //LTexture gFooTexture;
-//SDL_Surface* formattedSurface;
+//SDL_Surface* toolsFormattedSurface;
 //SDL_Surface* gScreenSurface;
 //LTexture::LTexture()
 //{
@@ -270,28 +270,28 @@
 //    //Deallocate
 //    free();
 //}
-//bool LTexture::loadFromFile( std::string path )
+//bool LTexture::loadFromFile( std::string toolPath )
 //{
-//    //Get rid of preexisting texture
+//    //Get rid of preexisting mainwindowTexture
 //    free();
 
-//    //The final texture
+//    //The final mainwindowTexture
 //    SDL_Texture* newTexture = NULL;
 
-////    //Load image at specified path
-////    SDL_Surface* loadedSurface = IMG_Load( path.c_str() );
-////    if( loadedSurface == NULL )
+////    //Load image at specified toolPath
+////    SDL_Surface* toolsSurface = IMG_Load( toolPath.c_str() );
+////    if( toolsSurface == NULL )
 ////    {
-////        printf( "Unable to load image %s! SDL_image Error: %s\n", path.c_str(), IMG_GetError() );
+////        printf( "Unable to load image %s! SDL_image Error: %s\n", toolPath.c_str(), IMG_GetError() );
 ////    }
 ////    else
 ////    {
 //        //Convert surface to display format
 
-////        formattedSurface = SDL_ConvertSurface( loadedSurface,  SDL_GetWindowSurface(gWindow)->format, NULL );
-////        formattedSurface = SDL_ConvertSurfaceFormat( loadedSurface, SDL_PIXELFORMAT_ARGB8888, NULL );
+////        toolsFormattedSurface = SDL_ConvertSurface( toolsSurface,  SDL_GetWindowSurface(gWindow)->format, NULL );
+////        toolsFormattedSurface = SDL_ConvertSurfaceFormat( toolsSurface, SDL_PIXELFORMAT_ARGB8888, NULL );
 
-////        if( formattedSurface == NULL )
+////        if( toolsFormattedSurface == NULL )
 ////        {
 ////            printf( "Unable to convert loaded surface to display format! SDL Error: %s\n", SDL_GetError() );
 ////        }
@@ -299,37 +299,37 @@
 //        {
 
 
-//            //Create blank streamable texture
+//            //Create blank streamable mainwindowTexture
 //            newTexture = SDL_CreateTexture( gRenderer,SDL_GetWindowPixelFormat( gWindow ), SDL_TEXTUREACCESS_STREAMING, SCREEN_WIDTH, SCREEN_HEIGHT );
 //            if( newTexture == NULL )
 //            {
-//                printf( "Unable to create blank texture! SDL Error: %s\n", SDL_GetError() );
+//                printf( "Unable to create blank mainwindowTexture! SDL Error: %s\n", SDL_GetError() );
 //            }
 //            else
 //            {
-//                //Lock texture for manipulation
+//                //Lock mainwindowTexture for manipulation
 //                SDL_LockTexture( newTexture, NULL, &mPixels, &mPitch );
 
 ////                //Copy loaded/formatted surface pixels
-////                memcpy( mPixels, formattedSurface->pixels, formattedSurface->pitch * formattedSurface->h );
+////                memcpy( mPixels, toolsFormattedSurface->pixels, toolsFormattedSurface->pitch * toolsFormattedSurface->h );
 
 
 
-////                //Unlock texture to update
+////                //Unlock mainwindowTexture to update
 //                SDL_UnlockTexture( newTexture );
 //                mPixels = NULL;
 
 //                //Get image dimensions
-//                mWidth = /*formattedSurface->w*/ SCREEN_WIDTH;
-//                mHeight = /*formattedSurface->h*/ SCREEN_HEIGHT;
+//                mWidth = /*toolsFormattedSurface->w*/ SCREEN_WIDTH;
+//                mHeight = /*toolsFormattedSurface->h*/ SCREEN_HEIGHT;
 //            }
 
 ////            //Get rid of old formatted surface
-////            SDL_FreeSurface( formattedSurface );
+////            SDL_FreeSurface( toolsFormattedSurface );
 //        }
 
 //        //Get rid of old loaded surface
-////        SDL_FreeSurface( loadedSurface );
+////        SDL_FreeSurface( toolsSurface );
 ////    }
 
 //    //Return success
@@ -341,30 +341,30 @@
 
 //bool LTexture::loadTexture()
 //{
-//    //Get rid of preexisting texture
+//    //Get rid of preexisting mainwindowTexture
 //    free();
 
-//    //The final texture
+//    //The final mainwindowTexture
 //    SDL_Texture* newTexture = NULL;
 //    SDL_Texture* toolsTexture = NULL;
 
 //        {
-//            //Create blank streamable texture
+//            //Create blank streamable mainwindowTexture
 //            newTexture = SDL_CreateTexture( gRenderer,SDL_GetWindowPixelFormat( gWindow ), SDL_TEXTUREACCESS_STREAMING, SCREEN_WIDTH, SCREEN_HEIGHT );
-//            toolsTexture = SDL_CreateTexture( gRenderer2,SDL_GetWindowPixelFormat( toolsWindow ), SDL_TEXTUREACCESS_STREAMING, 200, 200 );
+//            toolsTexture = SDL_CreateTexture( gtoolsRenderer,SDL_GetWindowPixelFormat( toolsWindow ), SDL_TEXTUREACCESS_STREAMING, 200, 200 );
 
 //            if( newTexture == NULL || toolsTexture == NULL)
 //            {
-//                printf( "Unable to create blank texture! SDL Error: %s\n", SDL_GetError() );
+//                printf( "Unable to create blank mainwindowTexture! SDL Error: %s\n", SDL_GetError() );
 //            }
 //            else
 //            {
-//                //Lock texture for manipulation
+//                //Lock mainwindowTexture for manipulation
 //                SDL_LockTexture( newTexture, NULL, &mPixels, &mPitch );
 //                SDL_LockTexture( toolsTexture, NULL, &mToolsPixels, &mToolsPitch );
 
 ////                //Copy loaded/formatted surface pixels
-////                memcpy( mPixels, formattedSurface->pixels, formattedSurface->pitch * formattedSurface->h );
+////                memcpy( mPixels, toolsFormattedSurface->pixels, toolsFormattedSurface->pitch * toolsFormattedSurface->h );
 
 //                //set backgrounf to white
 ////                memset(mPixels, WHITE , SCREEN_WIDTH * SCREEN_HEIGHT * sizeof(Uint32));
@@ -373,7 +373,7 @@
 
 
 
-//                //Unlock texture to update
+//                //Unlock mainwindowTexture to update
 //                SDL_UnlockTexture( newTexture );
 //                mPixels = NULL;
 //                SDL_UnlockTexture( toolsTexture );
@@ -402,7 +402,7 @@
 
 //    /*Create 100 surfaces blit one to the existing one*/
 
-//    //Get rid of preexisting texture
+//    //Get rid of preexisting mainwindowTexture
 ////    free();
 
 //     gFont = TTF_OpenFont("arial.ttf", 10);
@@ -415,21 +415,21 @@
 ////    SDL_Surface* textSurface = TTF_RenderText_Blended_Wrapped(gFont, textureText.c_str(), textColor ,300);
 
 //        SDL_Rect textLocation = { x, y, 8, 10 };
-//    //SDL_BlitSurface(textSurface, NULL, formattedSurface, &textLocation);
+//    //SDL_BlitSurface(textSurface, NULL, toolsFormattedSurface, &textLocation);
 
 
 
 
 
-//    //Then create a texture from the "final textSurface"
+//    //Then create a mainwindowTexture from the "final textSurface"
 
 //    if( textSurface != NULL )
 //    {
-//        //Create texture from surface pixels
+//        //Create mainwindowTexture from surface pixels
 //        mTexture = SDL_CreateTextureFromSurface( gRenderer, textSurface );
 //        if( mTexture == NULL )
 //        {
-//            printf( "Unable to create texture from rendered text! SDL Error: %s\n", SDL_GetError() );
+//            printf( "Unable to create mainwindowTexture from rendered text! SDL Error: %s\n", SDL_GetError() );
 //        }
 //        else
 //        {
@@ -471,7 +471,7 @@
 
 //void LTexture::free()
 //{
-//    //Free texture if it exists
+//    //Free mainwindowTexture if it exists
 //    if( mTexture != NULL )
 //    {
 //        SDL_DestroyTexture( mTexture );
@@ -490,7 +490,7 @@
 
 //void LTexture::setColor( Uint8 red, Uint8 green, Uint8 blue )
 //{
-//    //Modulate texture rgb
+//    //Modulate mainwindowTexture rgb
 //    SDL_SetTextureColorMod( mTexture, red, green, blue );
 //}
 
@@ -502,13 +502,13 @@
 
 //void LTexture::setAlpha( Uint8 alpha )
 //{
-//    //Modulate texture alpha
+//    //Modulate mainwindowTexture alpha
 //    SDL_SetTextureAlphaMod( mTexture, alpha );
 //}
 
 ////void LTexture::update()
 ////{
-////    SDL_UpdateTexture((SDL_Texture*)this, NULL, formattedSurface->pixels, formattedSurface->pitch);
+////    SDL_UpdateTexture((SDL_Texture*)this, NULL, toolsFormattedSurface->pixels, toolsFormattedSurface->pitch);
 ////}
 
 //void LTexture::render( int x, int y, SDL_Rect* clip, double angle, SDL_Point* center, SDL_RendererFlip flip )
@@ -557,18 +557,18 @@
 //        printf( "Texture is already locked!\n" );
 //        success = false;
 //    }
-//    //Lock texture
+//    //Lock mainwindowTexture
 //    else
 //    {
 //        if( SDL_LockTexture( mTexture, NULL, &mPixels, &mPitch ) != 0 )
 //        {
-//            printf( "Unable to lock texture! %s\n", SDL_GetError() );
+//            printf( "Unable to lock mainwindowTexture! %s\n", SDL_GetError() );
 //            success = false;
 //        }
 
 //        if( SDL_LockTexture( mToolsTexture, NULL, &mToolsPixels, &mToolsPitch ) != 0 )
 //        {
-//            printf( "Unable to lock texture! %s\n", SDL_GetError() );
+//            printf( "Unable to lock mainwindowTexture! %s\n", SDL_GetError() );
 //            success = false;
 //        }
 //    }
@@ -586,7 +586,7 @@
 //        printf( "Texture is not locked!\n" );
 //        success = false;
 //    }
-//    //Unlock texture
+//    //Unlock mainwindowTexture
 //    else
 //    {
 //        SDL_UnlockTexture( mTexture );
@@ -629,15 +629,15 @@
 //    }
 //    else
 //    {
-//        //Set texture filtering to linear
+//        //Set mainwindowTexture filtering to linear
 //        if( !SDL_SetHint( SDL_HINT_RENDER_SCALE_QUALITY, "1" ) )
 //        {
-//            printf( "Warning: Linear texture filtering not enabled!" );
+//            printf( "Warning: Linear mainwindowTexture filtering not enabled!" );
 //        }
 
-//        //Create window
+//        //Create drawingWindow
 //        gWindow = SDL_CreateWindow( "SDL Tutorial", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, 0 );
-//        //Grab window identifier
+//        //Grab drawingWindow identifier
 //        windowId = SDL_GetWindowID( gWindow );
 
 //        toolsWindow = SDL_CreateWindow( "Tool Box", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 200, 200, 0 );
@@ -652,9 +652,9 @@
 //        else
 //        {
 
-//            //Create renderer for window
+//            //Create mainwindowRenderer for drawingWindow
 //            gRenderer = SDL_CreateRenderer( gWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC );
-//            gRenderer2 = SDL_CreateRenderer( toolsWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC );
+//            gtoolsRenderer = SDL_CreateRenderer( toolsWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC );
 ////            gRendererTools = SDL_CreateRenderer( toolsWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC );
 //            if( gRenderer == NULL  )
 //            {
@@ -663,7 +663,7 @@
 //            }
 //            else
 //            {
-//                //Initialize renderer color
+//                //Initialize mainwindowRenderer color
 //                SDL_SetRenderDrawColor( gRenderer, 0xFF, 0xFF, 0xFF, 0xFF );
 ////                SDL_SetRenderDrawColor( gRendererTools, 0xFF, 0x00, 0x00, 0xFF );
 
@@ -785,25 +785,25 @@
 //    bool success = true;
 
 
-//    //Load foo' texture
+//    //Load foo' mainwindowTexture
 ////    if( !gFooTexture.loadFromFile( "lion.png" ) )
 //    if(!gFooTexture.loadTexture())
 //    {
-//        printf( "Failed to load corner texture!\n" );
+//        printf( "Failed to load corner mainwindowTexture!\n" );
 //        success = false;
 //    }
 //    else
 //    {
-//        //Lock texture
+//        //Lock mainwindowTexture
 ////        if( !gFooTexture.lockTexture() )
 ////        {
-////            printf( "Unable to lock Foo' texture!\n" );
+////            printf( "Unable to lock Foo' mainwindowTexture!\n" );
 ////        }
 //        //Manual color key
 ////        else
 ////        {
 //            //Get pixel data
-////            Uint32* pixels = (Uint32*)gFooTexture.getPixels();//formattedSurface->pixels;
+////            Uint32* pixels = (Uint32*)gFooTexture.getPixels();//toolsFormattedSurface->pixels;
 ////            int pixelCount = ( gFooTexture.getPitch() / 4 ) * gFooTexture.getHeight();
 
 
@@ -811,8 +811,8 @@
 ////            Uint32 colorKey = SDL_MapRGB( SDL_GetWindowSurface( gWindow )->format, 0, 0xFF, 0xFF );
 ////            Uint32 transparent = SDL_MapRGBA( SDL_GetWindowSurface( gWindow )->format, 0xFF, 0xFF, 0xFF, 0x00 );
 
-////            Uint32 colorKey = SDL_MapRGB( formattedSurface->format, 0, 0xFF, 0xFF );
-////            Uint32 transparent = SDL_MapRGBA( formattedSurface->format, 0XFF, 0XFF, 0XFF, 0xFF );
+////            Uint32 colorKey = SDL_MapRGB( toolsFormattedSurface->format, 0, 0xFF, 0xFF );
+////            Uint32 transparent = SDL_MapRGBA( toolsFormattedSurface->format, 0XFF, 0XFF, 0XFF, 0xFF );
 
 ////                        for( int i = 0; i < pixelCount; ++i )
 ////                        {
@@ -826,17 +826,17 @@
 
 //            //Averagine by block
 //            //Color key pixels
-//            //int powerof2=powerof(2,10);//for a formattedSurface->w/64 block pixel width this should produce 8 blocks of 8 pixels
+//            //int powerof2=powerof(2,10);//for a toolsFormattedSurface->w/64 block pixel width this should produce 8 blocks of 8 pixels
 ////            int blockDivider=64;
-////            int block_width=formattedSurface->w/blockDivider;
-////            int block_height=formattedSurface->h/blockDivider;
+////            int block_width=toolsFormattedSurface->w/blockDivider;
+////            int block_height=toolsFormattedSurface->h/blockDivider;
 
 ////            std::string blockCharacterString;
 ////            //For each block every block_width pixels
-////            for(int bx = block_width; bx <= formattedSurface->w;  bx += block_width)
+////            for(int bx = block_width; bx <= toolsFormattedSurface->w;  bx += block_width)
 ////            {
 ////                //For each block every block_height pixels
-////                for(int by = block_height; by <= formattedSurface->h; by += block_height)
+////                for(int by = block_height; by <= toolsFormattedSurface->h; by += block_height)
 ////                {
 
 ////                    //total sum of Red,Green,Blue channel values
@@ -857,9 +857,9 @@
 ////                            Uint8 red ;
 ////                            Uint8 green ;
 ////                            Uint8 blue ;
-////                            pixel=pixels[x + y * formattedSurface->w];
+////                            pixel=pixels[x + y * toolsFormattedSurface->w];
 
-////                            SDL_GetRGB( pixel, formattedSurface->format ,  &red, &green, &blue );
+////                            SDL_GetRGB( pixel, toolsFormattedSurface->format ,  &red, &green, &blue );
 
 
 ////                            sumR=sumR+red;
@@ -903,7 +903,7 @@
 ////                        {
 ////                            //manually change the color of the pixel
 ////                                    pixel = (0xFF << 24) | (red << 16) | (green << 8) | blue;
-////                            pixels [(formattedSurface->w* y)+x ] = pixel;
+////                            pixels [(toolsFormattedSurface->w* y)+x ] = pixel;
 ////                        }
 
 ////                    }//square block end replacing values
@@ -915,11 +915,11 @@
 ////                            pixels [(gFooTexture.getWidth()* by)+bx ] = 255;
 
 
-//                    //Create a texture (appropriate chosen character, appropriately colored) for each block of pixels at bx,by to be replaced
+//                    //Create a mainwindowTexture (appropriate chosen character, appropriately colored) for each block of pixels at bx,by to be replaced
 ////                    SDL_Color AV_BLOCK_COLOR = {avR,avG,avB};
 
 //                    /*
-//                     * and now we can create a texture of the characters in the blockCharacterString
+//                     * and now we can create a mainwindowTexture of the characters in the blockCharacterString
 //                     */
 ////                    gFooTexture.loadFromRenderedText(getGrayShade(avRGBValue),AV_BLOCK_COLOR,bx,by);
 
@@ -931,24 +931,24 @@
 
 //            }
 
-//            //At the end. Get pixels of the surface associated with the gRenderer (formattedSurface)
+//            //At the end. Get pixels of the surface associated with the gRenderer (toolsFormattedSurface)
 //            //save the image
-////            Uint32 * finaltexturePixels = (Uint32 *)formattedSurface->pixels;
-////            SDL_RenderReadPixels(gRenderer, &formattedSurface->clip_rect, formattedSurface->format->format, finaltexturePixels, formattedSurface->w * formattedSurface->format->BytesPerPixel);
-////            SDL_Surface* saveSurface = SDL_CreateRGBSurfaceFrom(finaltexturePixels, formattedSurface->w, formattedSurface->h,
-////                                                                formattedSurface->format->BitsPerPixel,
-////                                                                formattedSurface->w * formattedSurface->format->BytesPerPixel,
-////                                                                formattedSurface->format->Rmask, formattedSurface->format->Gmask,
-////                                                                formattedSurface->format->Bmask, formattedSurface->format->Amask);
+////            Uint32 * finaltexturePixels = (Uint32 *)toolsFormattedSurface->pixels;
+////            SDL_RenderReadPixels(gRenderer, &toolsFormattedSurface->clip_rect, toolsFormattedSurface->format->format, finaltexturePixels, toolsFormattedSurface->w * toolsFormattedSurface->format->BytesPerPixel);
+////            SDL_Surface* saveSurface = SDL_CreateRGBSurfaceFrom(finaltexturePixels, toolsFormattedSurface->w, toolsFormattedSurface->h,
+////                                                                toolsFormattedSurface->format->BitsPerPixel,
+////                                                                toolsFormattedSurface->w * toolsFormattedSurface->format->BytesPerPixel,
+////                                                                toolsFormattedSurface->format->Rmask, toolsFormattedSurface->format->Gmask,
+////                                                                toolsFormattedSurface->format->Bmask, toolsFormattedSurface->format->Amask);
 
 
 ////            SDL_SaveBMP(saveSurface, "MYASCIICOLOREDIMAGE.bmp");
 
 
 //            //Get rid of old formatted surface
-////            SDL_FreeSurface( formattedSurface );
+////            SDL_FreeSurface( toolsFormattedSurface );
 
-//            //Unlock texture
+//            //Unlock mainwindowTexture
 ////            gFooTexture.unlockTexture();
 ////        }
 ////    }
@@ -961,16 +961,16 @@
 //    //Free loaded images
 //    gFooTexture.free();
 
-//    //Destroy window
+//    //Destroy drawingWindow
 //    SDL_DestroyRenderer( gRenderer );
 //    SDL_DestroyWindow( gWindow );
 //    gWindow = NULL;
 //    gRenderer = NULL;
 
-//    SDL_DestroyRenderer( gRenderer2 );
+//    SDL_DestroyRenderer( gtoolsRenderer );
 //    SDL_DestroyWindow( toolsWindow );
 //    toolsWindow = NULL;
-//    gRenderer2 = NULL;
+//    gtoolsRenderer = NULL;
 
 
 //    //Quit SDL_ttf
@@ -984,13 +984,13 @@
 
 //void handleEvent( SDL_Event& e )
 //{
-//    //If an event was detected for this window
-////    if( e.type == SDL_WINDOWEVENT && e.window.windowID == 2 )
+//    //If an event was detected for this drawingWindow
+////    if( e.type == SDL_WINDOWEVENT && e.drawingWindow.windowID == 2 )
 //    {
 //        //Caption update flag
 ////        bool updateCaption = false;
 
-//        switch( e.window.event )
+//        switch( e.drawingWindow.event )
 //        {
 //            //Window appeared
 //            case SDL_WINDOWEVENT_SHOWN:
@@ -1004,16 +1004,16 @@
 
 //            //Get new dimensions and repaint
 //            case SDL_WINDOWEVENT_SIZE_CHANGED:
-////            mWidth = e.window.data1;
-////            mHeight = e.window.data2;
+////            mWidth = e.drawingWindow.data1;
+////            mHeight = e.drawingWindow.data2;
 ////            SDL_RenderPresent( gRenderer );
-////            SDL_RenderPresent( gRenderer2 );
+////            SDL_RenderPresent( gtoolsRenderer );
 //            break;
 
 //            //Repaint on expose
 //            case SDL_WINDOWEVENT_EXPOSED:
 ////            SDL_RenderPresent( gRenderer );
-////            SDL_RenderPresent( gRenderer2 );
+////            SDL_RenderPresent( gtoolsRenderer );
 //            break;
 
 //            //Mouse enter
@@ -1061,7 +1061,7 @@
 //            break;
 //        }
 
-//        //Update window caption with new data
+//        //Update drawingWindow caption with new data
 ////        if( updateCaption )
 //        {
 ////            std::stringstream caption;
@@ -1070,7 +1070,7 @@
 
 
 
-//            if(e.window.windowID==2)
+//            if(e.drawingWindow.windowID==2)
 //            {
 ////                SDL_SetRenderDrawColor( gRenderer, 0xFF, 0x00, 0xFF, 0x00 );
 
@@ -1118,15 +1118,15 @@
 ////                    renderQuad2.h = clip->h;
 ////                }
 
-////                SDL_RenderClear( gRenderer2 );
+////                SDL_RenderClear( gtoolsRenderer );
 
 
 //                SDL_Rect* clip = NULL; double angle = 0.0; SDL_Point* center = NULL; SDL_RendererFlip flip = SDL_FLIP_NONE;
 //                //Render to screen
-//                SDL_RenderCopy( gRenderer2, gFooTexture.mToolsTexture, NULL, NULL/*, angle, center, flip*/ );
+//                SDL_RenderCopy( gtoolsRenderer, gFooTexture.mToolsTexture, NULL, NULL/*, angle, center, flip*/ );
 
 //                //Update screen
-//                SDL_RenderPresent( gRenderer2 );
+//                SDL_RenderPresent( gtoolsRenderer );
 
 
 //            }
@@ -1140,7 +1140,7 @@
 
 //int main( int argc, char* args[] )
 //{
-//    //Start up SDL and create window
+//    //Start up SDL and create drawingWindow
 //    if( !init() )
 //    {
 //        printf( "Failed to initialize!\n" );
@@ -1159,8 +1159,8 @@
 //            bool quit = false;
 
 //            gFooTexture.lockTexture();
-//            Uint32* pixels = (Uint32*)gFooTexture.getPixels();//formattedSurface->pixels;
-//            Uint32* toolspixels = (Uint32*)gFooTexture.getToolsPixels();//formattedSurface->pixels;
+//            Uint32* pixels = (Uint32*)gFooTexture.getPixels();//toolsFormattedSurface->pixels;
+//            Uint32* toolspixels = (Uint32*)gFooTexture.getToolsPixels();//toolsFormattedSurface->pixels;
 
 //            //Event handler
 //            SDL_Event e;
@@ -1204,16 +1204,16 @@
 //                            drawcolor = (0xFF << 24) | (v << 16) | (v << 8) | v;
 
 
-//                            std::cout<<"e.window.windowID="<<e.window.windowID<<std::endl;
+//                            std::cout<<"e.drawingWindow.windowID="<<e.drawingWindow.windowID<<std::endl;
 //                            //Texture pixels' modification
-//                            if (e.window.windowID==2)
+//                            if (e.drawingWindow.windowID==2)
 //                            {
 
 //                                pixels[ (mouseY * SCREEN_WIDTH) + mouseX] = drawcolor;
 
 //                            }
 
-//                            if (e.window.windowID==3)
+//                            if (e.drawingWindow.windowID==3)
 //                            {
 
 //                                toolspixels[ (mouseY * 200) + mouseX] = drawcolor;
@@ -1233,7 +1233,7 @@
 
 //                        const int TOTAL_WINDOWS=2;
 //                        //////////////////////////////////////////////////////////
-//                        //Handle window events
+//                        //Handle drawingWindow events
 //                       // for( int i = 0; i < TOTAL_WINDOWS; ++i )
 //                        {
 ////                            gWindow.handleEvent( e );
@@ -1332,18 +1332,25 @@ bool quit = false;
 SDL_Event event;
 
 
-SDL_Window * window;
+SDL_Window * drawingWindow;
 int drawingWindowId;
 int ToolsWindowId;
 
-SDL_Renderer * renderer;
-SDL_Renderer * renderer2;
-SDL_Texture * texture;
+SDL_Renderer * mainwindowRenderer;
+SDL_Texture * mainwindowTexture;
 
-Uint32 * pixels = new Uint32[640 * 480];
-void * pixels2;
-//Uint32 *backbufferPixels = new Uint32[640 * 480];
-Uint32 * backbufferPixels=NULL;// (Uint32*)malloc(640 * 480 * sizeof(Uint32));
+SDL_Renderer * toolsRenderer;
+SDL_Texture * toolsTexture;
+
+
+int mainwindowWidth =640;
+int mainwindowHeight =480;
+int toolswindowWidth =100;
+
+Uint32 * mainwindowPixels = new Uint32[mainwindowWidth * mainwindowHeight];
+void * toolsPixels = new Uint32[mainwindowWidth * mainwindowHeight];
+//Uint32 *backbufferPixels = new Uint32[mainwindowWidth * mainwindowHeight];
+Uint32 * backbufferPixels=NULL;// (Uint32*)malloc(mainwindowWidth * mainwindowHeight * sizeof(Uint32));
 int sizeofbackbufferPixels;
 
 Uint8 tmpColor;
@@ -1366,15 +1373,14 @@ boolean NOWDRAWING =FALSE;
 SDL_Color colorpicked;
 
 ///////////////////////////////////////////////////////////////////
-/// \brief loadedSurface
-const char * path="toolbox.png";
-SDL_Surface* loadedSurface;
-SDL_Surface * surf;
+/// \brief toolsSurface
+const char * toolPath="toolbox.png";
+SDL_Surface* toolsSurface;
+SDL_Surface * mainwindowSurface;
 
-SDL_Surface* formattedSurface;
-SDL_Surface* formattedSurface2;
+SDL_Surface* toolsFormattedSurface;
+SDL_Surface* mainwindowFormattedSurface;
 
-SDL_Texture * texture2;
 
 
 // Main Mid-Point Circle Algorithm Helper Functions
@@ -1382,10 +1388,10 @@ void drawpixel(int x, int y, Uint32 * all_pixels, Uint32 ** tmpPixels/*, SDL_Sur
 {
 
 
-    if(x>0 && x<640 && y>0 && y<480) //keep safe image boundaries
+    if(x>0 && x<mainwindowWidth && y>0 && y<mainwindowHeight) //keep safe image boundaries
     {
         //next pixel position
-        int index = y* 640   + x;
+        int index = y* mainwindowWidth   + x;
 
         //Get specific pixel
         Uint32 pixel = (*tmpPixels)[index];
@@ -1393,13 +1399,13 @@ void drawpixel(int x, int y, Uint32 * all_pixels, Uint32 ** tmpPixels/*, SDL_Sur
         //Change the current pixel to the values specified by newRed,newGreen,newBlue
 
         SDL_Color c;c.r=colorpicked.r;c.g=colorpicked.g;c.b=colorpicked.b;
-        Uint32 tmpPixel=SDL_MapRGB(formattedSurface2->format,c.r,c.g,c.b );
+        Uint32 tmpPixel=SDL_MapRGB(mainwindowFormattedSurface->format,c.r,c.g,c.b );
 
         //Update the buffer surface's pixels
-        (*tmpPixels)[y * 640 + x] = tmpPixel;
+        (*tmpPixels)[y * mainwindowWidth + x] = tmpPixel;
 
-        SDL_SetRenderDrawColor( renderer, colorpicked.a, colorpicked.r, colorpicked.g, colorpicked.b);
-        SDL_RenderDrawPoint(renderer,x,y);
+        SDL_SetRenderDrawColor( mainwindowRenderer, colorpicked.a, colorpicked.r, colorpicked.g, colorpicked.b);
+        SDL_RenderDrawPoint(mainwindowRenderer,x,y);
 
 
 
@@ -1516,13 +1522,13 @@ void floodfill (int x,int  y, Uint32* all_pixels, Uint8 targetR,Uint8 targetG,Ui
     std::stack<Element> stack;
 
 
-    Uint32 * tmpPixels=(Uint32*)malloc(640*480* sizeof(Uint32));
-    memcpy(tmpPixels,all_pixels, 640 * 480 * sizeof(Uint32));
+    Uint32 * tmpPixels=(Uint32*)malloc(mainwindowWidth*mainwindowHeight* sizeof(Uint32));
+    memcpy(tmpPixels,all_pixels, mainwindowWidth * mainwindowHeight * sizeof(Uint32));
 
 
 //    int pitch;
 //    void *pxs=(void *) all_pixels;
-//    SDL_LockTexture(texture,NULL,&pxs,&pitch);
+//    SDL_LockTexture(mainwindowTexture,NULL,&pxs,&pitch);
 
     Element e(x,y);
     stack.push(e);
@@ -1537,11 +1543,11 @@ void floodfill (int x,int  y, Uint32* all_pixels, Uint8 targetR,Uint8 targetG,Ui
 //            std::cout<<"x="<<x<<", y="<<y<<std::endl;
 
             //make sure pixel position is within the surface's boundaries
-            if  (x > 0 && x < 640 && y > 0 && y < 480)
+            if  (x > 0 && x < mainwindowWidth && y > 0 && y < mainwindowHeight)
             {
 
                 //next pixel position
-                int index = y* 640   + x;
+                int index = y* mainwindowWidth   + x;
 
                 //Get specific pixel
                 Uint32 pixel = tmpPixels[index];
@@ -1551,12 +1557,12 @@ void floodfill (int x,int  y, Uint32* all_pixels, Uint8 targetR,Uint8 targetG,Ui
 
 //                Uint32 *pixelformat;
 //                int w,h;
-//                SDL_QueryTexture(texture, pixelformat, NULL, &w, &h);
+//                SDL_QueryTexture(mainwindowTexture, pixelformat, NULL, &w, &h);
 
 
 
 
-                SDL_GetRGB(pixel, formattedSurface2->format , &curPixR, &curPixG, &curPixB);
+                SDL_GetRGB(pixel, mainwindowFormattedSurface->format , &curPixR, &curPixG, &curPixB);
 
 
 
@@ -1578,15 +1584,15 @@ void floodfill (int x,int  y, Uint32* all_pixels, Uint8 targetR,Uint8 targetG,Ui
                     //Change the current pixel to the values specified by newRed,newGreen,newBlue
 //                    pixel = (0xFF << 24) | (replacementR << 16) | (replacementG << 8) | replacementB;
                     //Update the surface's pixels
-//                    all_pixels[y * 640 + x] = pixel;
+//                    all_pixels[y * mainwindowWidth + x] = pixel;
 
 
                     SDL_Color c;c.r=replacementR;c.g=replacementG;c.b=replacementB;
-                    Uint32 tmpPixel=SDL_MapRGB(formattedSurface2->format,c.r,c.g,c.b );
+                    Uint32 tmpPixel=SDL_MapRGB(mainwindowFormattedSurface->format,c.r,c.g,c.b );
 
-//                    for(int i =0;i<640;i++)
-//                        for(int j =0;j<480;j++)
-                            tmpPixels[y * 640 + x] = tmpPixel;
+//                    for(int i =0;i<mainwindowWidth;i++)
+//                        for(int j =0;j<mainwindowHeight;j++)
+                            tmpPixels[y * mainwindowWidth + x] = tmpPixel;
 
 
                     stack.push( Element(x + 1, y) );  // right
@@ -1598,10 +1604,10 @@ void floodfill (int x,int  y, Uint32* all_pixels, Uint8 targetR,Uint8 targetG,Ui
             }
     }
 
-        memcpy(all_pixels,tmpPixels,640*480* sizeof(Uint32));
+        memcpy(all_pixels,tmpPixels,mainwindowWidth*mainwindowHeight* sizeof(Uint32));
         delete tmpPixels;
 
-//        SDL_UnlockTexture(texture);
+//        SDL_UnlockTexture(mainwindowTexture);
 
 
 }
@@ -1614,17 +1620,17 @@ void floodfill (int x,int  y, Uint32* all_pixels, Uint8 targetR,Uint8 targetG,Ui
 //    //  is 0,0,0,
 
 
-//    if( x >= 0 && x < 640 && y >= 0 && y < 480 )
+//    if( x >= 0 && x < mainwindowWidth && y >= 0 && y < mainwindowHeight )
 //    {
 //        //next pixel position
-//        int index = y* 640  + x;
+//        int index = y* mainwindowWidth  + x;
 
 //        //Get specific pixel
 //        Uint32 pixel = all_pixels[index];
 
 //        Uint8 curPixR, curPixG, curPixB;
 //        //Get current r,g,b
-//        SDL_GetRGB(pixel, formattedSurface->format, &curPixR, &curPixG, &curPixB);
+//        SDL_GetRGB(pixel, toolsFormattedSurface->format, &curPixR, &curPixG, &curPixB);
 
 //        // the node's color we visit must match match the color                                 the node's color we visit must match not have the same
 //        // we intend to change (looking for in ex. white pixels)                                 color as the new color (in ex. "don't make it")
@@ -1633,11 +1639,11 @@ void floodfill (int x,int  y, Uint32* all_pixels, Uint8 targetR,Uint8 targetG,Ui
 //            //Change the current pixel to the values specified by newRed,newGreen,newBlue
 ////            pixel = (0xFF << 24) | (replacementR << 16) | (replacementG << 8) | replacementB;
 ////            //Update the surface's pixels
-////            all_pixels[y * 640+ x] = pixel;
+////            all_pixels[y * mainwindowWidth+ x] = pixel;
 
 //            SDL_Color c;c.r=replacementR;c.g=replacementG;c.b=replacementB;
-//            Uint32 tmpPixel=SDL_MapRGB(formattedSurface->format,c.r,c.g,c.b );
-//            all_pixels[y * 640+ x] = tmpPixel;
+//            Uint32 tmpPixel=SDL_MapRGB(toolsFormattedSurface->format,c.r,c.g,c.b );
+//            all_pixels[y * mainwindowWidth+ x] = tmpPixel;
 
 
 //            floodFill4(x + 1, y,     all_pixels,  targetR,targetG,targetB, replacementR,replacementG,replacementB );
@@ -1684,7 +1690,7 @@ void drawBresenhamLine(int x,int y,int x2,int y2)
       int numerator = longest >> 1 ;
       for (int i=0;i<=longest;i++)
       {
-          SDL_RenderDrawPoint(renderer,x,y);
+          SDL_RenderDrawPoint(mainwindowRenderer,x,y);
 
           lineArray=(Point*)realloc(lineArray,(i+1)*sizeof(Point));
           lineArray[i]=Point(x,y);
@@ -1710,13 +1716,13 @@ void drawBresenhamLine(int x,int y,int x2,int y2)
 
 
     //Now create the backbuffercopy of the original pixel array (our board)
-    memcpy(backbufferPixels, pixels,  640 * 480 * sizeof(Uint32));
+    memcpy(backbufferPixels, mainwindowPixels,  mainwindowWidth * mainwindowHeight * sizeof(Uint32));
 
     for(int i=0;i<=longest;i++)
     {
 
-        Uint32 tmpPixel=SDL_MapRGB(formattedSurface2->format, colorpicked.r,colorpicked.g,colorpicked.b);
-        backbufferPixels[lineArray[i].y * 640 + lineArray[i].x]=tmpPixel;
+        Uint32 tmpPixel=SDL_MapRGB(mainwindowFormattedSurface->format, colorpicked.r,colorpicked.g,colorpicked.b);
+        backbufferPixels[lineArray[i].y * mainwindowWidth + lineArray[i].x]=tmpPixel;
     }
 
     free(lineArray);
@@ -1760,14 +1766,14 @@ void drawBresenhamLine(int x,int y,int x2,int y2)
 //      {
 //          Point tmpPlotingPoint=lineArray[i];
 
-//          SDL_SetRenderDrawColor( renderer, 0, 0, 255, 255 );
+//          SDL_SetRenderDrawColor( mainwindowRenderer, 0, 0, 255, 255 );
 
 //          //back buffer draw points
-//          SDL_RenderDrawPoint(renderer,tmpPlotingPoint.x,tmpPlotingPoint.y);
+//          SDL_RenderDrawPoint(mainwindowRenderer,tmpPlotingPoint.x,tmpPlotingPoint.y);
 ////          SDL_Color pointcolor;
 ////          pointcolor.r=0;pointcolor.g=255;pointcolor.b=0;
-////          Uint32 tmpPixel=SDL_MapRGB(formattedSurface->format, pointcolor.r,pointcolor.g,pointcolor.b);
-////          backbufferPixels[tmpPlotingPoint.y * 640 + tmpPlotingPoint.x]=tmpPixel;
+////          Uint32 tmpPixel=SDL_MapRGB(toolsFormattedSurface->format, pointcolor.r,pointcolor.g,pointcolor.b);
+////          backbufferPixels[tmpPlotingPoint.y * mainwindowWidth + tmpPlotingPoint.x]=tmpPixel;
 
 //      }
 
@@ -1783,109 +1789,119 @@ int main(int argc, char ** argv)
 
     SDL_Init(SDL_INIT_VIDEO);
 
-    SDL_Window * window = SDL_CreateWindow("SDL2 Pixel Drawing",
-        SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 640, 480, 0);
+    SDL_Window * drawingWindow = SDL_CreateWindow("SDL2 Pixel Drawing",
+        SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, mainwindowWidth, mainwindowHeight, 0);
+    int drawingWindowId=SDL_GetWindowID(drawingWindow);
 
-    int drawingWindowId=SDL_GetWindowID(window);
-    SDL_Window * window2 = SDL_CreateWindow("Tools",
-        SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 100, 100, 0);
-    int ToolsWindowId=SDL_GetWindowID(window2);
-
+    mainwindowRenderer = SDL_CreateRenderer(drawingWindow, -1, 0);
+    mainwindowTexture = SDL_CreateTexture(mainwindowRenderer,SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STATIC, mainwindowWidth, mainwindowHeight);
 
 
-    renderer = SDL_CreateRenderer(window, -1, 0);
-    renderer2 = SDL_CreateRenderer(window2, -1, 0);
-    texture = SDL_CreateTexture(renderer,
-        SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STATIC, 640, 480);
+    SDL_Window * toolsWindow = SDL_CreateWindow("Tools",
+        SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, toolswindowWidth, toolswindowWidth, 0);
+    int ToolsWindowId=SDL_GetWindowID(toolsWindow);
 
+    toolsRenderer = SDL_CreateRenderer(toolsWindow, -1, 0);
 
+    toolsSurface=IMG_Load(toolPath);
+    if( toolsSurface == NULL )
+    {
+        printf( "Unable to load image %s! SDL_image Error: %s\n", toolPath, IMG_GetError() );
+    }
+    else
+    {
+        // Convert surface to display format
 
-    loadedSurface=IMG_Load( /*path.c_str() */ path);
+        // toolsFormattedSurface = SDL_ConvertSurface( toolsSurface,  SDL_GetWindowSurface(gWindow)->format, NULL );
+        toolsFormattedSurface = SDL_ConvertSurfaceFormat( toolsSurface, SDL_PIXELFORMAT_ARGB8888, NULL );
 
-
-        if( loadedSurface == NULL )
+        if( toolsFormattedSurface == NULL )
         {
-            printf( "Unable to load image %s! SDL_image Error: %s\n", path, IMG_GetError() );
+            printf( "Unable to convert loaded surface to display format! SDL Error: %s\n", SDL_GetError() );
         }
         else
         {
-            // Convert surface to display format
+            //Create blank streamable toolsTexture
+            toolsTexture = SDL_CreateTexture( toolsRenderer,SDL_GetWindowPixelFormat( toolsWindow ), SDL_TEXTUREACCESS_STATIC, toolswindowWidth, toolswindowWidth );
 
-            // formattedSurface = SDL_ConvertSurface( loadedSurface,  SDL_GetWindowSurface(gWindow)->format, NULL );
-            formattedSurface = SDL_ConvertSurfaceFormat( loadedSurface, SDL_PIXELFORMAT_ARGB8888, NULL );
-
-            if( formattedSurface == NULL )
+            if( toolsTexture == NULL )
             {
-                printf( "Unable to convert loaded surface to display format! SDL Error: %s\n", SDL_GetError() );
+                printf( "Unable to create blank toolsTexture! SDL Error: %s\n", SDL_GetError() );
             }
             else
             {
-                //Create blank streamable texture
-                texture2 = SDL_CreateTexture( renderer2,SDL_GetWindowPixelFormat( window2 ), SDL_TEXTUREACCESS_STREAMING, 100, 100 );
-                if( texture2 == NULL )
-                {
-                    printf( "Unable to create blank texture! SDL Error: %s\n", SDL_GetError() );
-                }
-                else
-                {
-                    int pitch;
-                    //Lock texture for manipulation
-                    SDL_LockTexture( texture2, NULL, &pixels2, &pitch );
+                int pitch;
+                //Lock toolsTexture for manipulation
+                SDL_LockTexture( toolsTexture, NULL, &toolsPixels, &pitch );
 
-                    //Copy loaded/formatted surface pixels
-                    memcpy( pixels2, formattedSurface->pixels, formattedSurface->pitch * formattedSurface->h );
+                //Copy loaded/formatted surface pixels
+                memcpy( toolsPixels, toolsFormattedSurface->pixels, toolsFormattedSurface->pitch * toolsFormattedSurface->h );
 
 
-                    //Unlock texture to update
-                    SDL_UnlockTexture( texture2 );
-//                    pixels2 = NULL;
-                }
-
+                //Unlock toolsTexture to update
+                SDL_UnlockTexture( toolsTexture );
+//                    toolsPixels = NULL;
             }
-            //Get rid of old loaded surface
-            SDL_FreeSurface( loadedSurface );
+
         }
+        //Get rid of old loaded surface
+        SDL_FreeSurface( toolsSurface );
+    }
     //////////////////////////////////////////////////////////////////
 
+    Uint32 rmask, gmask, bmask, amask;
+    #if SDL_BYTEORDER == SDL_BIG_ENDIAN
+        rmask = 0xff000000;
+        gmask = 0x00ff0000;
+        bmask = 0x0000ff00;
+        amask = 0x000000ff;
+    #else
+        rmask = 0x000000ff;
+        gmask = 0x0000ff00;
+        bmask = 0x00ff0000;
+        amask = 0xff000000;
+    #endif
 
-    surf = SDL_CreateRGBSurface(0,640,480,32,0,0,0,0);
-    formattedSurface2 = SDL_ConvertSurfaceFormat( surf, SDL_PIXELFORMAT_ARGB8888, NULL );
-    if( formattedSurface2 == NULL )
+    mainwindowSurface = SDL_CreateRGBSurface(0,mainwindowWidth,mainwindowHeight,32, rmask, gmask, bmask, amask);
+    mainwindowFormattedSurface = SDL_ConvertSurfaceFormat( mainwindowSurface, SDL_PIXELFORMAT_ARGB8888, NULL );
+    if( mainwindowFormattedSurface == NULL )
     {
         printf( "Unable to convert loaded surface to display format! SDL Error: %s\n", SDL_GetError() );
     }
     else
     {
-            int pitch;
-            void *pxs=(void*)pixels;
-            //Lock texture for manipulation
-            SDL_LockTexture( texture, NULL, &pxs, &pitch );
+//            int pitch;
+//            void *pxs=(void*)mainwindowPixels;
+//            //Lock mainwindowTexture for manipulation
+//            SDL_LockTexture( mainwindowTexture, NULL, &pxs, &pitch );
 
-            //Copy loaded/formatted surface pixels
-            memcpy( pixels, formattedSurface2->pixels, 640 *480 );
+//            //Copy loaded/formatted surface pixels
+//            memcpy( mainwindowPixels, mainwindowFormattedSurface->pixels, mainwindowWidth *mainwindowHeight );
 
-            //Unlock texture to update
-            SDL_UnlockTexture( texture );
+//            //Unlock mainwindowTexture to update
+//            SDL_UnlockTexture( mainwindowTexture );
 
     }
     //Get rid of old loaded surface
-    SDL_FreeSurface( surf );
+    SDL_FreeSurface( mainwindowSurface );
 
 
-    memset(pixels, 255, 640 * 480 * sizeof(Uint32));
+    memset(mainwindowPixels, 255, mainwindowWidth * mainwindowHeight * sizeof(Uint32));
 
+    //copy
+    SDL_UpdateTexture(toolsTexture, NULL, toolsPixels, toolswindowWidth * sizeof(Uint32));
 
     while (!quit)
     {
-        SDL_UpdateTexture(texture, NULL, pixels, 640 * sizeof(Uint32));
-        SDL_UpdateTexture(texture2, NULL, pixels2, 100 * sizeof(Uint32));
+        SDL_UpdateTexture(mainwindowTexture, NULL, mainwindowPixels, mainwindowWidth * sizeof(Uint32));
+
         SDL_PollEvent(&event);
 
-        SDL_Rect DestR;
-        DestR.x = 100;
-        DestR.y = 100;
-        DestR.w = 100;
-        DestR.h = 100;
+//        SDL_Rect DestR;
+//        DestR.x = 100;
+//        DestR.y = 100;
+//        DestR.w = 100;
+//        DestR.h = 100;
 
         switch (event.type)
         {
@@ -1899,7 +1915,7 @@ int main(int argc, char ** argv)
 
                 if (drawPointLine && backbufferPixels!=NULL)
                 {
-                    memcpy(pixels,backbufferPixels,640*480*sizeof(Uint32));
+                    memcpy(mainwindowPixels,backbufferPixels,mainwindowWidth*mainwindowHeight*sizeof(Uint32));
 
                     delete backbufferPixels;
                     backbufferPixels=NULL;
@@ -1908,7 +1924,7 @@ int main(int argc, char ** argv)
 
                 if (drawPointCircle && backbufferPixels!=NULL)
                 {
-                    memcpy(pixels,backbufferPixels,640*480*sizeof(Uint32));
+                    memcpy(mainwindowPixels,backbufferPixels,mainwindowWidth*mainwindowHeight*sizeof(Uint32));
 
                     delete backbufferPixels;
                     backbufferPixels=NULL;
@@ -1925,11 +1941,11 @@ int main(int argc, char ** argv)
 //                    Uint8 b ;
 
 
-//                    SDL_GetRGB(p,formattedSurface->format,&r,&g,&b);
+//                    SDL_GetRGB(p,toolsFormattedSurface->format,&r,&g,&b);
 
-//                    Uint32 pix=SDL_MapRGB(formattedSurface->format,r,g,b);
+//                    Uint32 pix=SDL_MapRGB(toolsFormattedSurface->format,r,g,b);
 
-//                    pixels[(i) * 640 + i] = pix;//(0xFF << 24) | (tmpColor << 16) | (tmpColor << 8) | tmpColor;;
+//                    pixels[(i) * mainwindowWidth + i] = pix;//(0xFF << 24) | (tmpColor << 16) | (tmpColor << 8) | tmpColor;;
 //                }
 
             }
@@ -1955,9 +1971,9 @@ int main(int argc, char ** argv)
 //                    r.w = 50;
 //                    r.h = 50;
 //                    // Set render color to blue ( rect will be rendered in this color )
-//                    SDL_SetRenderDrawColor( renderer, 0, 0, 255, 255 );
+//                    SDL_SetRenderDrawColor( mainwindowRenderer, 0, 0, 255, 255 );
 //                    // Render rect
-//                    SDL_RenderDrawRect( renderer, &r );
+//                    SDL_RenderDrawRect( mainwindowRenderer, &r );
 
 
 
@@ -1968,8 +1984,8 @@ int main(int argc, char ** argv)
                     if (drawPointLine==TRUE)
                     {
                         //Line Drawing
-                        //Make sure we draw the texture and THEN..we draw on the top of it for the backbuffer lines,points (for circle,rectangle)
-                        SDL_RenderCopy(renderer, texture, NULL, NULL);
+                        //Make sure we draw the mainwindowTexture and THEN..we draw on the top of it for the backbuffer lines,points (for circle,rectangle)
+                        SDL_RenderCopy(mainwindowRenderer, mainwindowTexture, NULL, NULL);
 
                         Point currentmousePos(mouseX,mouseY);
                         //start line point initialized just once
@@ -1987,15 +2003,15 @@ int main(int argc, char ** argv)
                         //Allocate some memory for the backbufferPixels
                         if (backbufferPixels==NULL)
                         {
-                            backbufferPixels=(Uint32*)malloc(640*480* sizeof(Uint32));
+                            backbufferPixels=(Uint32*)malloc(mainwindowWidth*mainwindowHeight* sizeof(Uint32));
                         }
                         else
                         {
-                            memset(backbufferPixels,0,640*480* sizeof(Uint32));
+                            memset(backbufferPixels,0,mainwindowWidth*mainwindowHeight* sizeof(Uint32));
                         }
 
                         //Now create the backbuffercopy of the original pixel array (our main drawing board)
-//                        memcpy(backbufferPixels, pixels,  640 * 480 * sizeof(Uint32));
+//                        memcpy(backbufferPixels, pixels,  mainwindowWidth * mainwindowHeight * sizeof(Uint32));
 
                         drawBresenhamLine(lineStart.x,lineStart.y, lineEnd.x,lineEnd.y);
 
@@ -2004,26 +2020,26 @@ int main(int argc, char ** argv)
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //                        //back buffer draw points
-//                        SDL_RenderDrawPoint(renderer,mouseX,mouseY);
+//                        SDL_RenderDrawPoint(mainwindowRenderer,mouseX,mouseY);
 //                        SDL_Color pointcolor;
 //                        pointcolor.r=0;pointcolor.g=255;pointcolor.b=0;
-//                        Uint32 tmpPixel=SDL_MapRGB(formattedSurface->format, pointcolor.r,pointcolor.g,pointcolor.b);
-//                        backbufferPixels[mouseY * 640 + mouseX]=tmpPixel;
+//                        Uint32 tmpPixel=SDL_MapRGB(toolsFormattedSurface->format, pointcolor.r,pointcolor.g,pointcolor.b);
+//                        backbufferPixels[mouseY * mainwindowWidth + mouseX]=tmpPixel;
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                         //draw line of 50 points 0,0,to 50,50
 //                        for (int i=0;i<50;i++)
 //                        {
 //                                backbufferPixels=NULL;
 //                                backbufferPixels= (Uint32*)malloc(10*sizeof(Uint32));
-//                                SDL_SetRenderDrawColor( renderer, 0, 0, 255, 255 );
-//                                SDL_RenderDrawPoint(renderer,i,i);
+//                                SDL_SetRenderDrawColor( mainwindowRenderer, 0, 0, 255, 255 );
+//                                SDL_RenderDrawPoint(mainwindowRenderer,i,i);
 
 //                                backbufferPixels = (Uint32*) realloc (backbufferPixels, i*sizeof(Uint32));
 
 //                                SDL_Color pointcolor;
 //                                pointcolor.r=0;pointcolor.g=255;pointcolor.b=0;
-//                                Uint32 tmpPixel=SDL_MapRGB(formattedSurface->format, pointcolor.r,pointcolor.g,pointcolor.b);
-//                                backbufferPixels[mouseY * 640 + mouseX]=tmpPixel;
+//                                Uint32 tmpPixel=SDL_MapRGB(toolsFormattedSurface->format, pointcolor.r,pointcolor.g,pointcolor.b);
+//                                backbufferPixels[mouseY * mainwindowWidth + mouseX]=tmpPixel;
 //                                sizeofbackbufferPixels=i;
 //                        }
 
@@ -2036,8 +2052,8 @@ int main(int argc, char ** argv)
                     {
 
                         //Line Drawing
-                        //Make sure we draw the texture and THEN..we draw on the top of it for the backbuffer lines,points (for circle,rectangle)
-                        SDL_RenderCopy(renderer, texture, NULL, NULL);
+                        //Make sure we draw the mainwindowTexture and THEN..we draw on the top of it for the backbuffer lines,points (for circle,rectangle)
+                        SDL_RenderCopy(mainwindowRenderer, mainwindowTexture, NULL, NULL);
 
                         Point currentmousePos(mouseX,mouseY);
                         //start line point initialized just once
@@ -2067,18 +2083,16 @@ int main(int argc, char ** argv)
 
                             if (backbufferPixels==NULL)
                             {
-                                backbufferPixels=(Uint32*)malloc(640*480* sizeof(Uint32));
+                                backbufferPixels=(Uint32*)malloc(mainwindowWidth*mainwindowHeight* sizeof(Uint32));
                             }
                             else
                             {
-                                memset(backbufferPixels,0,640*480* sizeof(Uint32));
+                                memset(backbufferPixels,0,mainwindowWidth*mainwindowHeight* sizeof(Uint32));
                             }
 
-                            memcpy(backbufferPixels,pixels, 640 * 480 * sizeof(Uint32));
+                            memcpy(backbufferPixels,mainwindowPixels, mainwindowWidth * mainwindowHeight * sizeof(Uint32));
 
-                            drawMultipleInnerCircles(r, x,  y, yc ,  xc, Pk, pixels, &backbufferPixels, changeLocation, enterWhile/*, gPNGSurface, gWindow, gScreenSurface*/);
-
-
+                            drawMultipleInnerCircles(r, x,  y, yc ,  xc, Pk, mainwindowPixels, &backbufferPixels, changeLocation, enterWhile/*, gPNGSurface, gWindow, gScreenSurface*/);
 
                         }
                     }
@@ -2094,10 +2108,10 @@ int main(int argc, char ** argv)
                                 Uint8 newRed,newGreen,newBlue;
 
                                 //Grab the color of the pixel on the spot and change the pixel's that match this color
-                                int index =(mouseY) * 640 + mouseX;
-                                Uint32 pixel = pixels[index];
+                                int index =(mouseY) * mainwindowWidth + mouseX;
+                                Uint32 pixel = mainwindowPixels[index];
 
-                                SDL_GetRGB(pixel, formattedSurface2->format, &red, &green, &blue);
+                                SDL_GetRGB(pixel, mainwindowFormattedSurface->format, &red, &green, &blue);
 
                                 SDL_Color c;c.r=red;c.g=green;c.b=blue;
 
@@ -2109,8 +2123,8 @@ int main(int argc, char ** argv)
                                 SDL_Color nc;nc.r=newRed;nc.g=newGreen;nc.b=newBlue;
 
 
-    //                            floodFill4(mouseX,mouseY,pixels,red,green,blue, newRed,newGreen,newBlue);
-                                floodfill(mouseX,mouseY,pixels, c.r,c.g,c.b, nc.r,nc.g,nc.b);
+    //                            floodFill4(mouseX,mouseY,mainwindowPixels,red,green,blue, newRed,newGreen,newBlue);
+                                floodfill(mouseX,mouseY,mainwindowPixels, c.r,c.g,c.b, nc.r,nc.g,nc.b);
 
                             }
                         }
@@ -2119,18 +2133,18 @@ int main(int argc, char ** argv)
                     else if (drawPointPencil==TRUE)
                     {
                         //Line Drawing
-                        //Make sure we draw the texture and THEN..we draw on the top of it for the backbuffer lines,points (for circle,rectangle)
-                        SDL_RenderCopy(renderer, texture, NULL, NULL);
+                        //Make sure we draw the mainwindowTexture and THEN..we draw on the top of it for the backbuffer lines,points (for circle,rectangle)
+                        SDL_RenderCopy(mainwindowRenderer, mainwindowTexture, NULL, NULL);
 
-                        Uint32 pix=SDL_MapRGB(formattedSurface2->format,colorpicked.r,colorpicked.g,colorpicked.b);
-                        pixels[(mouseY) * 640 + mouseX] = pix;//(0xFF << 24) | (tmpColor << 16) | (tmpColor << 8) | tmpColor;;
+                        Uint32 pix=SDL_MapRGB(mainwindowFormattedSurface->format,colorpicked.r,colorpicked.g,colorpicked.b);
+                        mainwindowPixels[(mouseY) * mainwindowWidth + mouseX] = pix;//(0xFF << 24) | (tmpColor << 16) | (tmpColor << 8) | tmpColor;;
 
                     }
                     else if (drawPointBrush==TRUE)
                     {
                         //Line Drawing
-                        //Make sure we draw the texture and THEN..we draw on the top of it for the backbuffer lines,points (for circle,rectangle)
-                        SDL_RenderCopy(renderer, texture, NULL, NULL);
+                        //Make sure we draw the mainwindowTexture and THEN..we draw on the top of it for the backbuffer lines,points (for circle,rectangle)
+                        SDL_RenderCopy(mainwindowRenderer, mainwindowTexture, NULL, NULL);
 
                         //Create a brush (draws on surrounding pixels as well depending on the brushsize)
                         int brushsize=8;
@@ -2138,17 +2152,17 @@ int main(int argc, char ** argv)
                         {
                             for(int j=0;j<brushsize/2;j++)
                             {
-                                Uint32 pix=SDL_MapRGB(formattedSurface2->format,colorpicked.r,colorpicked.g,colorpicked.b);
+                                Uint32 pix=SDL_MapRGB(mainwindowFormattedSurface->format,colorpicked.r,colorpicked.g,colorpicked.b);
 
-                                pixels[(mouseY+j) * 640 + mouseX+i] = pix;
+                                mainwindowPixels[(mouseY+j) * mainwindowWidth + mouseX+i] = pix;
                             }
                         }
                     }
                     else if (drawPointEraser==TRUE)
                     {
                         //Line Drawing
-                        //Make sure we draw the texture and THEN..we draw on the top of it for the backbuffer lines,points (for circle,rectangle)
-                        SDL_RenderCopy(renderer, texture, NULL, NULL);
+                        //Make sure we draw the mainwindowTexture and THEN..we draw on the top of it for the backbuffer lines,points (for circle,rectangle)
+                        SDL_RenderCopy(mainwindowRenderer, mainwindowTexture, NULL, NULL);
 
 
                         //Create a brush (draws on surrounding pixels as well depending on the brushsize)
@@ -2157,14 +2171,12 @@ int main(int argc, char ** argv)
                         {
                             for(int j=0;j<brushsize/2;j++)
                             {
-                                Uint32 pix=SDL_MapRGB(formattedSurface2->format,colorpicked.r,colorpicked.g,colorpicked.b);
+                                Uint32 pix=SDL_MapRGB(mainwindowFormattedSurface->format,colorpicked.r,colorpicked.g,colorpicked.b);
 
-                                pixels[(mouseY+j) * 640 + mouseX+i] = pix;//(0xFF << 24) | (tmpColor << 16) | (tmpColor << 8) | tmpColor;;
+                                mainwindowPixels[(mouseY+j) * mainwindowWidth + mouseX+i] = pix;//(0xFF << 24) | (tmpColor << 16) | (tmpColor << 8) | tmpColor;;
                             }
                         }
                     }
-
-
 
 
 //                    //draw rectangle
@@ -2182,9 +2194,9 @@ int main(int argc, char ** argv)
 //    //                            tmpColor=r+g+b;
 //    //                            =(0xFF << 24) | (tmpColor << 16) | (tmpColor << 8) | tmpColor;
 
-//                                Uint32 pix=SDL_MapRGB(formattedSurface->format,r,g,b);
+//                                Uint32 pix=SDL_MapRGB(toolsFormattedSurface->format,r,g,b);
 
-//                                pixels[(mouseY+j) * 640 + mouseX+i] = pix;//(0xFF << 24) | (tmpColor << 16) | (tmpColor << 8) | tmpColor;;
+//                                pixels[(mouseY+j) * mainwindowWidth + mouseX+i] = pix;//(0xFF << 24) | (tmpColor << 16) | (tmpColor << 8) | tmpColor;;
 //                            }
 //                        }
 //                    }
@@ -2203,23 +2215,23 @@ int main(int argc, char ** argv)
                     Uint8 b ;
 
                     //convert void * to Uint32  array, for direct pixel array manipulation
-                    Uint32 *pxls= (Uint32*)pixels2;
+                    Uint32 *pxls= (Uint32*)toolsPixels;
 
                     //Get a specific pixel and check its color
-                    Uint32 p=pxls[mouseY * 100 + mouseX];
-                    SDL_GetRGB(p,formattedSurface->format, &r,&g,&b);;
+                    Uint32 p=pxls[mouseY * toolswindowWidth + mouseX];
+                    SDL_GetRGB(p,toolsFormattedSurface->format, &r,&g,&b);;
 
                     std::cout<<"mouseX="<<mouseX<<" , "<<"mouseY="<<mouseY<<std::endl;
 
                     //Select Line Drawing Tool based on the color of the pixel clicked
 //                    if (r==0 &&g==0 &&b==0)
 
-                    //Select Line Drawing Tool based on which portion of the texture the mouse clicks
+                    //Select Line Drawing Tool based on which portion of the mainwindowTexture the mouse clicks
 
                     //RECTANGLE
                     if (mouseX>0 && mouseX<30 && mouseY>0 && mouseY<30)
                     {
-                        std::cout<<"RECTANGLE portion of texture"<<std::endl;
+                        std::cout<<"RECTANGLE portion of mainwindowTexture"<<std::endl;
                         drawRectangle=TRUE;
                         drawPointLine=FALSE;
                         drawPointBrush=FALSE;
@@ -2234,12 +2246,12 @@ int main(int argc, char ** argv)
 
 //                        r=255;g=255;b=255;
 //                        tmpColor = r + g + b;
-//                        pxls[mouseY * 100 + mouseX] = SDL_MapRGB(formattedSurface->format,r,g,b);//(0xFF << 24) | (tmpColor << 16) | (tmpColor << 8) | tmpColor;
+//                        pxls[mouseY * toolswindowWidth + mouseX] = SDL_MapRGB(toolsFormattedSurface->format,r,g,b);//(0xFF << 24) | (tmpColor << 16) | (tmpColor << 8) | tmpColor;
                     }
                     //CIRCLE
                     else if (mouseX>30 && mouseX<60 && mouseY>0 && mouseY<30)
                     {
-                        std::cout<<"CIRCLE portion of texture"<<std::endl;
+                        std::cout<<"CIRCLE portion of mainwindowTexture"<<std::endl;
 
                         drawRectangle=FALSE;
                         drawPointLine=FALSE;
@@ -2253,12 +2265,12 @@ int main(int argc, char ** argv)
 
 //                        r=0;g=0;b=0;
 //                        tmpColor = r + g + b;
-//                        pxls[mouseY * 100 + mouseX] = SDL_MapRGB(formattedSurface->format,r,g,b);;//(0xFF << 24) | (tmpColor << 16) | (tmpColor << 8) | tmpColor;
+//                        pxls[mouseY * toolswindowWidth + mouseX] = SDL_MapRGB(toolsFormattedSurface->format,r,g,b);;//(0xFF << 24) | (tmpColor << 16) | (tmpColor << 8) | tmpColor;
                     }
                     //BUCKET FILL
-                    else if (mouseX>60 && mouseX<100 && mouseY>0 && mouseY<30)
+                    else if (mouseX>60 && mouseX<toolswindowWidth && mouseY>0 && mouseY<30)
                     {
-                        std::cout<<"BUCKET FILL portion of texture"<<std::endl;
+                        std::cout<<"BUCKET FILL portion of mainwindowTexture"<<std::endl;
 
                         drawRectangle=FALSE;
                         drawPointLine=FALSE;
@@ -2273,7 +2285,7 @@ int main(int argc, char ** argv)
                     //LINE
                     else if (mouseX>0 && mouseX<30 && mouseY>30 && mouseY<60)
                     {
-                        std::cout<<"LINE portion of texture"<<std::endl;
+                        std::cout<<"LINE portion of mainwindowTexture"<<std::endl;
 
                         drawRectangle=FALSE;
                         drawPointLine=TRUE;
@@ -2288,7 +2300,7 @@ int main(int argc, char ** argv)
                     //PENCIL
                     else if (mouseX>30 && mouseX<60 && mouseY>30 && mouseY<60)
                     {
-                        std::cout<<"PENCIL portion of texture"<<std::endl;
+                        std::cout<<"PENCIL portion of mainwindowTexture"<<std::endl;
 
                         drawRectangle=FALSE;
                         drawPointLine=FALSE;
@@ -2301,9 +2313,9 @@ int main(int argc, char ** argv)
                         drawPointBlackColor =FALSE;
                     }
                     //BRUSH
-                    else if (mouseX>60 && mouseX<100 && mouseY>30 && mouseY<60)
+                    else if (mouseX>60 && mouseX<toolswindowWidth && mouseY>30 && mouseY<60)
                     {
-                        std::cout<<"BRUSH portion of texture"<<std::endl;
+                        std::cout<<"BRUSH portion of mainwindowTexture"<<std::endl;
 
                         drawRectangle=FALSE;
                         drawPointLine=FALSE;
@@ -2316,9 +2328,9 @@ int main(int argc, char ** argv)
                         drawPointBlackColor =FALSE;
                     }
                     //RED COLOR
-                    else if (mouseX>0 && mouseX<30 && mouseY>60 && mouseY<100)
+                    else if (mouseX>0 && mouseX<30 && mouseY>60 && mouseY<toolswindowWidth)
                     {
-                        std::cout<<"RED COLOR portion of texture"<<std::endl;
+                        std::cout<<"RED COLOR portion of mainwindowTexture"<<std::endl;
 
                         drawRectangle=FALSE;
                         drawPointLine=FALSE;
@@ -2333,9 +2345,9 @@ int main(int argc, char ** argv)
                         colorpicked.r=255;colorpicked.g=0;colorpicked.b=0;
                     }
                     //BLACK COLOR
-                    else if (mouseX>30 && mouseX<60 && mouseY>60 && mouseY<100)
+                    else if (mouseX>30 && mouseX<60 && mouseY>60 && mouseY<toolswindowWidth)
                     {
-                        std::cout<<"BLACK COLOR portion of texture"<<std::endl;
+                        std::cout<<"BLACK COLOR portion of mainwindowTexture"<<std::endl;
 
                         drawRectangle=FALSE;
                         drawPointLine=FALSE;
@@ -2350,9 +2362,9 @@ int main(int argc, char ** argv)
                         colorpicked.r=0;colorpicked.g=0;colorpicked.b=0;
                     }
                     //ERASER
-                    else if (mouseX>60 && mouseX<100 && mouseY>60 && mouseY<100)
+                    else if (mouseX>60 && mouseX<toolswindowWidth && mouseY>60 && mouseY<toolswindowWidth)
                     {
-                        std::cout<<"ERASER portion of texture"<<std::endl;
+                        std::cout<<"ERASER portion of mainwindowTexture"<<std::endl;
 
                         drawRectangle=FALSE;
                         drawPointLine=FALSE;
@@ -2378,28 +2390,29 @@ int main(int argc, char ** argv)
             break;
         }
 
-//        SDL_RenderClear(renderer);
+//        SDL_RenderClear(mainwindowRenderer);
 //        SDL_Rect renderQuad;
 
 //        renderQuad.w = DestR.w; renderQuad.h = DestR.h;
 //        renderQuad.x=DestR.x;renderQuad.y=DestR.y;
 
-        //use it just a for buffering-rubberband helper-then modify the actuale pixels of the texture when mouse up for example
+        //use it just a for buffering-rubberband helper-then modify the actuale pixels of the mainwindowTexture when mouse up for example
 //        SDL_Rect outlineRect = { 100 , 100, 100, 100 };
-//        SDL_SetRenderDrawColor( renderer, 0xFF, 0x00, 0x00, 0xFF );
-//        SDL_RenderDrawRect( renderer, &outlineRect );
+//        SDL_SetRenderDrawColor( mainwindowRenderer, 0xFF, 0x00, 0x00, 0xFF );
+//        SDL_RenderDrawRect( mainwindowRenderer, &outlineRect );
 
         // Creat a rect at pos ( 50, 50 ) that's 50 pixels wide and 50 pixels high.
 
+        //update the mainwindow
         if(!leftMouseButtonDown)
         {
-            SDL_RenderCopy(renderer, texture, NULL, NULL);
+            SDL_RenderCopy(mainwindowRenderer, mainwindowTexture, NULL, NULL);
         }
 
 
 //        int drawAreaWidth=50;
 //        int drawAreaHeight=50;
-//        SDL_Texture * buffer=SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STATIC,drawAreaWidth,drawAreaHeight);
+//        SDL_Texture * buffer=SDL_CreateTexture(mainwindowRenderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STATIC,drawAreaWidth,drawAreaHeight);
 
 
 
@@ -2410,12 +2423,12 @@ int main(int argc, char ** argv)
 //        r.w = 50;
 //        r.h = 50;
 //        // Set render color to blue ( rect will be rendered in this color )
-//        SDL_SetRenderDrawColor( renderer, 0, 0, 255, 255 );
+//        SDL_SetRenderDrawColor( mainwindowRenderer, 0, 0, 255, 255 );
 //        // Render rect
-//        SDL_RenderDrawRect( renderer, &r );
+//        SDL_RenderDrawRect( mainwindowRenderer, &r );
 //        for (int i=0;i<50;i++)
 //        {
-//            SDL_RenderDrawPoint(renderer,i,i);
+//            SDL_RenderDrawPoint(mainwindowRenderer,i,i);
 //        }
 
 //        SDL_Rect d;
@@ -2424,30 +2437,30 @@ int main(int argc, char ** argv)
 //        d.w = 50;
 //        d.h = 50;
 
-//        SDL_RenderCopy(renderer,texture,NULL,&r);
+//        SDL_RenderCopy(mainwindowRenderer,mainwindowTexture,NULL,&r);
 
 
         //update the rendered image
-        SDL_RenderPresent(renderer);
+        SDL_RenderPresent(mainwindowRenderer);
 
 
-        SDL_RenderClear(renderer2);
-        SDL_RenderCopy(renderer2, texture2, NULL, NULL);
-        SDL_RenderPresent(renderer2);
+        SDL_RenderClear(toolsRenderer);
+        SDL_RenderCopy(toolsRenderer, toolsTexture, NULL, NULL);
+        SDL_RenderPresent(toolsRenderer);
     }
 
 
-    SDL_FreeSurface( formattedSurface );
-    SDL_FreeSurface( formattedSurface2 );
+    SDL_FreeSurface( toolsFormattedSurface );
+    SDL_FreeSurface( mainwindowFormattedSurface );
 
-    delete[] pixels;
-    delete[] pixels2;
-    SDL_DestroyTexture(texture);
-    SDL_DestroyRenderer(renderer);
-    SDL_DestroyWindow(window);
-    SDL_DestroyTexture(texture2);
-    SDL_DestroyRenderer(renderer2);
-    SDL_DestroyWindow(window2);
+    delete[] mainwindowPixels;
+    delete[] toolsPixels;
+    SDL_DestroyTexture(mainwindowTexture);
+    SDL_DestroyRenderer(mainwindowRenderer);
+    SDL_DestroyWindow(drawingWindow);
+    SDL_DestroyTexture(toolsTexture);
+    SDL_DestroyRenderer(toolsRenderer);
+    SDL_DestroyWindow(toolsWindow);
     SDL_Quit();
 
     return 0;
