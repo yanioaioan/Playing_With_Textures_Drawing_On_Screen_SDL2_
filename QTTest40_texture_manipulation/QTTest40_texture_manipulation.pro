@@ -1,7 +1,9 @@
 TEMPLATE = app
 CONFIG += console
 CONFIG -= app_bundle
-CONFIG -= qt
+CONFIG += qt
+
+QT +=gui core opengl
 
 SOURCES += main.cpp
 LIBS += -L/usr/lib -lSDL2 -lSDL2_image -lSDL2_ttf

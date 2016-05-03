@@ -1441,7 +1441,25 @@ void callDrawPixel(int xc,int yc,int x,int y, Uint32 * all_pixels, Uint32 ** tmp
 }
 
 
+void drawCircles(int brushRadius, int mouseY, int mouseX)
+{
 
+    const double PI = 3.14159;
+
+    for (int incrRadius=0; incrRadius<brushRadius; incrRadius++)
+    {
+        for (double angle=0; angle<=2*PI; angle+=0.001)//You are using radians so you will have to increase by a very small amount
+        {
+            //This will have the coordinates  you want to draw a point at
+
+             //SDL_RenderDrawPoint(mainwindowRenderer,mouseX + incrRadius*cos( angle ), mouseY + incrRadius*sin( angle ));
+
+             Uint32 pix=SDL_MapRGB(mainwindowFormattedSurface->format,colorpicked.r,colorpicked.g,colorpicked.b);
+             mainwindowPixels[ (int)(mouseY + incrRadius*sin( angle )) * mainwindowWidth + (int)(mouseX + incrRadius*cos( angle )) ] = pix;
+        }
+
+    }
+}
 
 void drawMultipleInnerCircles(int r, int x, int y, int yc, int xc, float Pk, Uint32 * all_pixels, Uint32 ** tmpPixels, boolean &changeLocation, boolean &enterWhile/*, SDL_Surface *gPNGSurface, SDL_Window *gWindow, SDL_Surface * gScreenSurface */)
 {
@@ -1690,6 +1708,7 @@ void drawBresenhamLine(int x,int y,int x2,int y2)
       int numerator = longest >> 1 ;
       for (int i=0;i<=longest;i++)
       {
+          SDL_SetRenderDrawColor(mainwindowRenderer, colorpicked.r, colorpicked.g, colorpicked.b, colorpicked.a);
           SDL_RenderDrawPoint(mainwindowRenderer,x,y);
 
           lineArray=(Point*)realloc(lineArray,(i+1)*sizeof(Point));
@@ -1718,10 +1737,11 @@ void drawBresenhamLine(int x,int y,int x2,int y2)
     //Now create the backbuffercopy of the original pixel array (our board)
     memcpy(backbufferPixels, mainwindowPixels,  mainwindowWidth * mainwindowHeight * sizeof(Uint32));
 
+    //create a a pixel based on the color chosen
+    Uint32 tmpPixel=SDL_MapRGB(mainwindowFormattedSurface->format, colorpicked.r,colorpicked.g,colorpicked.b);
     for(int i=0;i<=longest;i++)
     {
-
-        Uint32 tmpPixel=SDL_MapRGB(mainwindowFormattedSurface->format, colorpicked.r,colorpicked.g,colorpicked.b);
+        //replace backbuffer pixel with it
         backbufferPixels[lineArray[i].y * mainwindowWidth + lineArray[i].x]=tmpPixel;
     }
 
@@ -2094,6 +2114,7 @@ int main(int argc, char ** argv)
 
                             drawMultipleInnerCircles(r, x,  y, yc ,  xc, Pk, mainwindowPixels, &backbufferPixels, changeLocation, enterWhile/*, gPNGSurface, gWindow, gScreenSurface*/);
 
+
                         }
                     }
                     else if (drawPointBucketFill==TRUE)
@@ -2148,15 +2169,19 @@ int main(int argc, char ** argv)
 
                         //Create a brush (draws on surrounding pixels as well depending on the brushsize)
                         int brushsize=8;
-                        for(int i=0;i<brushsize/2;i++)
-                        {
-                            for(int j=0;j<brushsize/2;j++)
-                            {
-                                Uint32 pix=SDL_MapRGB(mainwindowFormattedSurface->format,colorpicked.r,colorpicked.g,colorpicked.b);
+//                        for(int i=0;i<brushsize/2;i++)
+//                        {
+//                            for(int j=0;j<brushsize/2;j++)
+//                            {
+//                                Uint32 pix=SDL_MapRGB(mainwindowFormattedSurface->format,colorpicked.r,colorpicked.g,colorpicked.b);
 
-                                mainwindowPixels[(mouseY+j) * mainwindowWidth + mouseX+i] = pix;
-                            }
-                        }
+//                                mainwindowPixels[(mouseY+j) * mainwindowWidth + mouseX+i] = pix;
+//                            }
+//                        }
+
+                        drawCircles(brushsize, mouseY, mouseX);
+
+
                     }
                     else if (drawPointEraser==TRUE)
                     {
