@@ -1443,19 +1443,23 @@ void callDrawPixel(int xc,int yc,int x,int y, Uint32 * all_pixels, Uint32 ** tmp
 
 void drawCircles(int brushRadius, int mouseY, int mouseX)
 {
-
     const double PI = 3.14159;
 
+    //circle radius
     for (int incrRadius=0; incrRadius<brushRadius; incrRadius++)
     {
+        //draw a circle
         for (double angle=0; angle<=2*PI; angle+=0.001)//You are using radians so you will have to increase by a very small amount
         {
             //This will have the coordinates  you want to draw a point at
 
-             //SDL_RenderDrawPoint(mainwindowRenderer,mouseX + incrRadius*cos( angle ), mouseY + incrRadius*sin( angle ));
-
              Uint32 pix=SDL_MapRGB(mainwindowFormattedSurface->format,colorpicked.r,colorpicked.g,colorpicked.b);
              mainwindowPixels[ (int)(mouseY + incrRadius*sin( angle )) * mainwindowWidth + (int)(mouseX + incrRadius*cos( angle )) ] = pix;
+
+             // how it's done
+//             SDL_SetRenderDrawColor(mainwindowRenderer, colorpicked.r, colorpicked.g, colorpicked.b, colorpicked.a);
+//             SDL_RenderDrawPoint(mainwindowRenderer,mouseX + incrRadius*sin( angle ), mouseY + incrRadius*cos( angle ));
+//             SDL_RenderPresent(mainwindowRenderer);
         }
 
     }
