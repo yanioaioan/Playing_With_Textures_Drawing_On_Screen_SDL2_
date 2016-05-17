@@ -1678,6 +1678,8 @@ void floodfill (int x,int  y, Uint32* all_pixels, Uint8 targetR,Uint8 targetG,Ui
 //}
 
 
+Point RectangleStart;
+Point RectangleEnd;
 
 
 Point lineStart;
@@ -2070,6 +2072,38 @@ int main(int argc, char ** argv)
                     }
                     else if (drawRectangle==TRUE)
                     {
+
+                        //Rectangle Drawing
+                        //Make sure we draw the mainwindowTexture and THEN..we draw on the top of it for the backbuffer lines,points (for circle,rectangle)
+                        SDL_RenderCopy(mainwindowRenderer, mainwindowTexture, NULL, NULL);
+
+                        Point currentmousePos(mouseX,mouseY);
+                        //start rec point initialized just once
+                        if (!NOWDRAWING)
+                        {
+                            NOWDRAWING=TRUE;
+                            RectangleStart=currentmousePos;
+                        }
+                        //end rec point
+                        RectangleEnd=currentmousePos;
+
+                        int recwidthDir=RectangleEnd.x-RectangleStart.x;
+                        int recHeightDir = RectangleEnd.y-RectangleStart.y;
+
+                        //draw a line starting from the start position and is recwidthDirlong towards its sing (+-)..and so on
+
+                        //top horizontal line
+                        SDL_RenderDrawLine(mainwindowRenderer, RectangleStart.x, RectangleStart.y, (RectangleStart.x + (RectangleEnd.x-RectangleStart.x)), (RectangleStart.y ) );
+
+                        //bottom horizontal line
+                        SDL_RenderDrawLine(mainwindowRenderer, RectangleStart.x, (RectangleStart.y + (RectangleEnd.y-RectangleStart.y)), (RectangleStart.x + (RectangleEnd.x-RectangleStart.x)), (RectangleStart.y + (RectangleEnd.y-RectangleStart.y)) );
+
+                        //left vertical line
+                        SDL_RenderDrawLine(mainwindowRenderer, RectangleStart.x, RectangleStart.y, (RectangleStart.x), (RectangleStart.y + (RectangleEnd.y-RectangleStart.y)) );
+
+                        //right vertical line
+                        SDL_RenderDrawLine(mainwindowRenderer, (RectangleStart.x + (RectangleEnd.x-RectangleStart.x)), RectangleStart.y, (RectangleStart.x + (RectangleEnd.x-RectangleStart.x)), (RectangleStart.y + (RectangleEnd.y-RectangleStart.y)) );
+
 
                     }
                     else if (drawPointCircle==TRUE)
