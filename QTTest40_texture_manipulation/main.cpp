@@ -1442,12 +1442,12 @@ void callDrawPixel(int xc,int yc,int x,int y, Uint32 * all_pixels, Uint32 ** tmp
 }
 
 
-void drawCircles(int brushRadius, int mouseY, int mouseX)
+void drawBrushCircles(int brushRadius, int mouseY, int mouseX)
 {
     const double PI = 3.14159;
 
     //circle radius
-    for (int incrRadius=0; incrRadius<brushRadius; incrRadius++)
+    for (double incrRadius=0; incrRadius<brushRadius; incrRadius++)
     {
         //draw a circle
         for (double angle=0; angle<=2*PI; angle+=0.001)//You are using radians so you will have to increase by a very small amount
@@ -1468,7 +1468,7 @@ void drawCircles(int brushRadius, int mouseY, int mouseX)
 
 void drawMultipleInnerCircles(int r, int x, int y, int yc, int xc, float Pk, Uint32 * all_pixels, Uint32 ** tmpPixels, boolean &changeLocation, boolean &enterWhile/*, SDL_Surface *gPNGSurface, SDL_Window *gWindow, SDL_Surface * gScreenSurface */)
 {
-//    while (r>=0 && enterWhile)
+//    while (r>=0 && enterWhile)//FILLED CIRCLE
     {
         // main drawing pixels loop
         while(x<y && enterWhile)
@@ -1507,6 +1507,41 @@ void drawMultipleInnerCircles(int r, int x, int y, int yc, int xc, float Pk, Uin
 //    }
 
 }
+
+
+
+
+
+//http://www.thecrazyprogrammer.com/2016/12/bresenhams-midpoint-circle-algorithm-c-c.html
+void drawAcircle(int r, int x, int y, int yc, int xc, float Pk, Uint32 * all_pixels, Uint32 ** tmpPixels, boolean &changeLocation, boolean &enterWhile/*, SDL_Surface *gPNGSurface, SDL_Window *gWindow, SDL_Surface * gScreenSurface */)
+{
+
+     x = r;
+     y = 0;
+     int err = 0;
+
+     // main drawing pixels loop
+    while(x>=y )
+        {
+        callDrawPixel(xc,yc,x,y, all_pixels, tmpPixels);
+        if (Pk <= 0)
+        {
+           y += 1;
+           Pk += 2*y + 1;
+        }
+
+        if (Pk > 0)
+        {
+           x -= 1;
+           Pk -= 2*x + 1;
+        }
+
+    }
+
+
+
+}
+
 
 
 typedef struct Point
@@ -2122,7 +2157,7 @@ int main(int argc, char ** argv)
 
                             memcpy(backbufferPixels,mainwindowPixels, mainwindowWidth * mainwindowHeight * sizeof(Uint32));
 
-                            drawMultipleInnerCircles(r, x,  y, yc ,  xc, Pk, mainwindowPixels, &backbufferPixels, changeLocation, enterWhile/*, gPNGSurface, gWindow, gScreenSurface*/);
+                            drawAcircle(r, x,  y, yc ,  xc, Pk, mainwindowPixels, &backbufferPixels, changeLocation, enterWhile/*, gPNGSurface, gWindow, gScreenSurface*/);
 
 
                         }
@@ -2190,7 +2225,7 @@ int main(int argc, char ** argv)
 //                            }
 //                        }
 
-                        drawCircles(brushsize, mouseY, mouseX);
+                        drawBrushCircles(brushsize, mouseY, mouseX);
 
 
                     }
@@ -2422,7 +2457,15 @@ int main(int argc, char ** argv)
 
             case SDL_KEYDOWN:
                 if(event.key.keysym.sym==SDLK_ESCAPE)
+                {
                     quit = true;
+                }
+                if(event.key.keysym.sym==SDLK_SPACE)//set all mainwindowPixels to white
+                {
+                    memset(mainwindowPixels, 255, mainwindowWidth * mainwindowHeight * sizeof(Uint32));
+                }
+
+
             break;
         }
 

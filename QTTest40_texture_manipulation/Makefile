@@ -33,10 +33,10 @@ MOVE          = mv -f
 TAR           = tar -cf
 COMPRESS      = gzip -9f
 DISTNAME      = QTTest40_texture_manipulation1.0.0
-DISTDIR = /home/yioannidis/Downloads/c/Eike_C/assignment2016/ASSIGNMENTHELP_PassProtectedProjects/Playing_With_Textures_Drawing_On_Screen_SDL2_-master/QTTest40_texture_manipulation/.tmp/QTTest40_texture_manipulation1.0.0
+DISTDIR = /home/yioannidis/Downloads/c/Eike_C/assignment2016/SDL2_Playing_With_Textures_Drawing_On_Screen/QTTest40_texture_manipulation/.tmp/QTTest40_texture_manipulation1.0.0
 LINK          = g++
 LFLAGS        = -Wl,-rpath,/opt/Qt5.7.0/5.7/gcc_64/lib
-LIBS          = $(SUBLIBS) -L/usr/lib -L/home/yioannidis/Downloads/c/Eike_C/assignment2016/ASSIGNMENTHELP_PassProtectedProjects/Playing_With_Textures_Drawing_On_Screen_SDL2_-master/QTTest40_texture_manipulation/lib/ -lSDL2main -lSDL2_image -lSDL2_ttf -lSDL2 -L/opt/Qt5.7.0/5.7/gcc_64/lib -lQt5OpenGL -L/usr/lib64 -lQt5Widgets -lQt5Gui -lQt5Core -lGL -lpthread 
+LIBS          = $(SUBLIBS) -L/usr/lib -L/home/yioannidis/Downloads/c/Eike_C/assignment2016/SDL2_Playing_With_Textures_Drawing_On_Screen/QTTest40_texture_manipulation/lib/ -lSDL2main -lSDL2_image -lSDL2_ttf -lSDL2 -L/opt/Qt5.7.0/5.7/gcc_64/lib -lQt5OpenGL -L/usr/lib64 -lQt5Widgets -lQt5Gui -lQt5Core -lGL -lpthread 
 AR            = ar cqs
 RANLIB        = 
 SED           = sed
@@ -48,10 +48,10 @@ OBJECTS_DIR   = ./
 
 ####### Files
 
-SOURCES       = failingFloodFillRecursion.cpp 
-OBJECTS       = failingFloodFillRecursion.o
-DIST          = ../../../../../../../.qmake.stash \
-		QTTest40_texture_manipulation.pro  failingFloodFillRecursion.cpp
+SOURCES       = main.cpp 
+OBJECTS       = main.o
+DIST          = ../../../../../../.qmake.stash \
+		QTTest40_texture_manipulation.pro  main.cpp
 QMAKE_TARGET  = QTTest40_texture_manipulation
 DESTDIR       = 
 TARGET        = QTTest40_texture_manipulation
@@ -63,7 +63,7 @@ first: all
 $(TARGET):  $(OBJECTS)  
 	$(LINK) $(LFLAGS) -o $(TARGET) $(OBJECTS) $(OBJCOMP) $(LIBS)
 
-Makefile: QTTest40_texture_manipulation.pro ../../../../../../../.qmake.cache /opt/Qt5.7.0/5.7/gcc_64/mkspecs/linux-g++/qmake.conf /opt/Qt5.7.0/5.7/gcc_64/mkspecs/features/spec_pre.prf \
+Makefile: QTTest40_texture_manipulation.pro ../../../../../../.qmake.cache /opt/Qt5.7.0/5.7/gcc_64/mkspecs/linux-g++/qmake.conf /opt/Qt5.7.0/5.7/gcc_64/mkspecs/features/spec_pre.prf \
 		/opt/Qt5.7.0/5.7/gcc_64/mkspecs/common/unix.conf \
 		/opt/Qt5.7.0/5.7/gcc_64/mkspecs/common/linux.conf \
 		/opt/Qt5.7.0/5.7/gcc_64/mkspecs/common/sanitize.conf \
@@ -198,8 +198,8 @@ Makefile: QTTest40_texture_manipulation.pro ../../../../../../../.qmake.cache /o
 		/opt/Qt5.7.0/5.7/gcc_64/mkspecs/features/qt_config.prf \
 		/opt/Qt5.7.0/5.7/gcc_64/mkspecs/linux-g++/qmake.conf \
 		/opt/Qt5.7.0/5.7/gcc_64/mkspecs/features/spec_post.prf \
-		../../../../../../../.qmake.cache \
-		../../../../../../../.qmake.stash \
+		../../../../../../.qmake.cache \
+		../../../../../../.qmake.stash \
 		/opt/Qt5.7.0/5.7/gcc_64/mkspecs/features/exclusive_builds.prf \
 		/opt/Qt5.7.0/5.7/gcc_64/mkspecs/features/default_pre.prf \
 		/opt/Qt5.7.0/5.7/gcc_64/mkspecs/features/resolve_config.prf \
@@ -358,8 +358,8 @@ Makefile: QTTest40_texture_manipulation.pro ../../../../../../../.qmake.cache /o
 /opt/Qt5.7.0/5.7/gcc_64/mkspecs/features/qt_config.prf:
 /opt/Qt5.7.0/5.7/gcc_64/mkspecs/linux-g++/qmake.conf:
 /opt/Qt5.7.0/5.7/gcc_64/mkspecs/features/spec_post.prf:
-../../../../../../../.qmake.cache:
-../../../../../../../.qmake.stash:
+../../../../../../.qmake.cache:
+../../../../../../.qmake.stash:
 /opt/Qt5.7.0/5.7/gcc_64/mkspecs/features/exclusive_builds.prf:
 /opt/Qt5.7.0/5.7/gcc_64/mkspecs/features/default_pre.prf:
 /opt/Qt5.7.0/5.7/gcc_64/mkspecs/features/resolve_config.prf:
@@ -396,7 +396,7 @@ dist: distdir FORCE
 distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
-	$(COPY_FILE) --parents failingFloodFillRecursion.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents main.cpp $(DISTDIR)/
 
 
 clean: compiler_clean 
@@ -437,8 +437,52 @@ compiler_clean:
 
 ####### Compile
 
-failingFloodFillRecursion.o: failingFloodFillRecursion.cpp 
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o failingFloodFillRecursion.o failingFloodFillRecursion.cpp
+main.o: main.cpp include/SDL_image.h \
+		include/SDL.h \
+		include/SDL_main.h \
+		include/SDL_stdinc.h \
+		include/SDL_config.h \
+		include/SDL_platform.h \
+		include/begin_code.h \
+		include/close_code.h \
+		include/SDL_assert.h \
+		include/SDL_atomic.h \
+		include/SDL_audio.h \
+		include/SDL_error.h \
+		include/SDL_endian.h \
+		include/SDL_mutex.h \
+		include/SDL_thread.h \
+		include/SDL_rwops.h \
+		include/SDL_clipboard.h \
+		include/SDL_cpuinfo.h \
+		include/SDL_events.h \
+		include/SDL_video.h \
+		include/SDL_pixels.h \
+		include/SDL_rect.h \
+		include/SDL_surface.h \
+		include/SDL_blendmode.h \
+		include/SDL_keyboard.h \
+		include/SDL_keycode.h \
+		include/SDL_scancode.h \
+		include/SDL_mouse.h \
+		include/SDL_joystick.h \
+		include/SDL_gamecontroller.h \
+		include/SDL_quit.h \
+		include/SDL_gesture.h \
+		include/SDL_touch.h \
+		include/SDL_filesystem.h \
+		include/SDL_haptic.h \
+		include/SDL_hints.h \
+		include/SDL_loadso.h \
+		include/SDL_log.h \
+		include/SDL_messagebox.h \
+		include/SDL_power.h \
+		include/SDL_render.h \
+		include/SDL_system.h \
+		include/SDL_timer.h \
+		include/SDL_version.h \
+		include/SDL_ttf.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o main.cpp
 
 ####### Install
 
