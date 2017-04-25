@@ -1404,6 +1404,7 @@ void drawpixel(int x, int y, Uint32 * all_pixels, Uint32 ** tmpPixels/*, SDL_Sur
         //Update the buffer surface's pixels
         (*tmpPixels)[y * mainwindowWidth + x] = tmpPixel;
 
+        //interactive drawing
         SDL_SetRenderDrawColor( mainwindowRenderer, colorpicked.a, colorpicked.r, colorpicked.g, colorpicked.b);
         SDL_RenderDrawPoint(mainwindowRenderer,x,y);
 
@@ -1635,51 +1636,53 @@ void floodfill (int x,int  y, Uint32* all_pixels, Uint8 targetR,Uint8 targetG,Ui
 }
 
 
-////Recursive 4-way floodfill, crashes if recursion stack is full
-//void floodFill4(int x, int y, Uint32* all_pixels, Uint8 targetR,Uint8 targetG,Uint8 targetB, Uint8 replacementR ,Uint8 replacementG,Uint8 replacementB)
-//{
-//    //Make sure we 're within the bounbaries of our surface & that the current pixel's color
-//    //  is 0,0,0,
+//Recursive 4-way floodfill, crashes if recursion stack is full
+void floodFill4(int x, int y, Uint32* all_pixels, Uint8 targetR,Uint8 targetG,Uint8 targetB, Uint8 replacementR ,Uint8 replacementG,Uint8 replacementB)
+{
+    //Make sure we 're within the bounbaries of our surface & that the current pixel's color
+    //  is 0,0,0,
 
 
-//    if( x >= 0 && x < mainwindowWidth && y >= 0 && y < mainwindowHeight )
-//    {
-//        //next pixel position
-//        int index = y* mainwindowWidth  + x;
+    if( (x >= 0 && x < mainwindowWidth) && (y >= 0 && y < mainwindowHeight) )
+    {
+        //next pixel position
+        int index = y* mainwindowWidth  + x;
 
-//        //Get specific pixel
-//        Uint32 pixel = all_pixels[index];
+        //Get specific pixel
+        Uint32 pixel = all_pixels[index];
 
-//        Uint8 curPixR, curPixG, curPixB;
-//        //Get current r,g,b
-//        SDL_GetRGB(pixel, toolsFormattedSurface->format, &curPixR, &curPixG, &curPixB);
+        Uint8 curPixR, curPixG, curPixB;
+        //Get current r,g,b
+        SDL_GetRGB(pixel, toolsFormattedSurface->format, &curPixR, &curPixG, &curPixB);
 
-//        // the node's color we visit must match match the color                                 the node's color we visit must match not have the same
-//        // we intend to change (looking for in ex. white pixels)                                 color as the new color (in ex. "don't make it")
-//        if( (curPixR==targetR && curPixG==targetG && curPixB==targetB) && (curPixR!=replacementR || curPixG!=replacementG || curPixB!=replacementB))
-//        {
-//            //Change the current pixel to the values specified by newRed,newGreen,newBlue
-////            pixel = (0xFF << 24) | (replacementR << 16) | (replacementG << 8) | replacementB;
-////            //Update the surface's pixels
-////            all_pixels[y * mainwindowWidth+ x] = pixel;
+        // the node's color we visit must match match the color                                 the node's color we visit must match not have the same
+        // we intend to change (looking for in ex. white pixels)                                 color as the new color (in ex. "don't make it")
+        if( (curPixR==targetR && curPixG==targetG && curPixB==targetB) && (curPixR!=replacementR || curPixG!=replacementG || curPixB!=replacementB))
+        {
+            //Change the current pixel to the values specified by newRed,newGreen,newBlue
+//            pixel = (0xFF << 24) | (replacementR << 16) | (replacementG << 8) | replacementB;
+//            //Update the surface's pixels
+//            all_pixels[y * mainwindowWidth+ x] = pixel;
 
-//            SDL_Color c;c.r=replacementR;c.g=replacementG;c.b=replacementB;
-//            Uint32 tmpPixel=SDL_MapRGB(toolsFormattedSurface->format,c.r,c.g,c.b );
-//            all_pixels[y * mainwindowWidth+ x] = tmpPixel;
+            SDL_Color c;c.r=replacementR;c.g=replacementG;c.b=replacementB;
+            Uint32 tmpPixel=SDL_MapRGB(toolsFormattedSurface->format,c.r,c.g,c.b );
+            all_pixels[y * mainwindowWidth+ x] = tmpPixel;
 
-
-//            floodFill4(x + 1, y,     all_pixels,  targetR,targetG,targetB, replacementR,replacementG,replacementB );
-//            floodFill4(x - 1, y,     all_pixels,  targetR,targetG,targetB, replacementR,replacementG,replacementB );
-//            floodFill4(x,     y + 1, all_pixels,  targetR,targetG,targetB, replacementR,replacementG,replacementB );
-//            floodFill4(x,     y - 1, all_pixels,  targetR,targetG,targetB, replacementR,replacementG,replacementB );
-//        }
-
-//    }
-//}
+            SDL_SetRenderDrawColor(mainwindowRenderer, c.r, c.g, c.b, c.a);
+            SDL_RenderDrawPoint(mainwindowRenderer,x,y);
+            SDL_RenderPresent(mainwindowRenderer);
 
 
-Point RectangleStart;
-Point RectangleEnd;
+            floodFill4(x + 1, y,     all_pixels,  targetR,targetG,targetB, replacementR,replacementG,replacementB );
+            floodFill4(x - 1, y,     all_pixels,  targetR,targetG,targetB, replacementR,replacementG,replacementB );
+            floodFill4(x,     y + 1, all_pixels,  targetR,targetG,targetB, replacementR,replacementG,replacementB );
+            floodFill4(x,     y - 1, all_pixels,  targetR,targetG,targetB, replacementR,replacementG,replacementB );
+        }
+
+    }
+}
+
+
 
 
 Point lineStart;
@@ -2073,38 +2076,6 @@ int main(int argc, char ** argv)
                     else if (drawRectangle==TRUE)
                     {
 
-                        //Rectangle Drawing
-                        //Make sure we draw the mainwindowTexture and THEN..we draw on the top of it for the backbuffer lines,points (for circle,rectangle)
-                        SDL_RenderCopy(mainwindowRenderer, mainwindowTexture, NULL, NULL);
-
-                        Point currentmousePos(mouseX,mouseY);
-                        //start rec point initialized just once
-                        if (!NOWDRAWING)
-                        {
-                            NOWDRAWING=TRUE;
-                            RectangleStart=currentmousePos;
-                        }
-                        //end rec point
-                        RectangleEnd=currentmousePos;
-
-                        int recwidthDir=RectangleEnd.x-RectangleStart.x;
-                        int recHeightDir = RectangleEnd.y-RectangleStart.y;
-
-                        //draw a line starting from the start position and is recwidthDirlong towards its sing (+-)..and so on
-
-                        //top horizontal line
-                        SDL_RenderDrawLine(mainwindowRenderer, RectangleStart.x, RectangleStart.y, (RectangleStart.x + (RectangleEnd.x-RectangleStart.x)), (RectangleStart.y ) );
-
-                        //bottom horizontal line
-                        SDL_RenderDrawLine(mainwindowRenderer, RectangleStart.x, (RectangleStart.y + (RectangleEnd.y-RectangleStart.y)), (RectangleStart.x + (RectangleEnd.x-RectangleStart.x)), (RectangleStart.y + (RectangleEnd.y-RectangleStart.y)) );
-
-                        //left vertical line
-                        SDL_RenderDrawLine(mainwindowRenderer, RectangleStart.x, RectangleStart.y, (RectangleStart.x), (RectangleStart.y + (RectangleEnd.y-RectangleStart.y)) );
-
-                        //right vertical line
-                        SDL_RenderDrawLine(mainwindowRenderer, (RectangleStart.x + (RectangleEnd.x-RectangleStart.x)), RectangleStart.y, (RectangleStart.x + (RectangleEnd.x-RectangleStart.x)), (RectangleStart.y + (RectangleEnd.y-RectangleStart.y)) );
-
-
                     }
                     else if (drawPointCircle==TRUE)
                     {
@@ -2139,11 +2110,12 @@ int main(int argc, char ** argv)
                             int y=r;
                             float Pk=1-r;
 
+                            //allocating back buffer
                             if (backbufferPixels==NULL)
                             {
                                 backbufferPixels=(Uint32*)malloc(mainwindowWidth*mainwindowHeight* sizeof(Uint32));
                             }
-                            else
+                            else//resetting back buffer (let's say to zero..it doesn't really matter)
                             {
                                 memset(backbufferPixels,0,mainwindowWidth*mainwindowHeight* sizeof(Uint32));
                             }
@@ -2182,7 +2154,8 @@ int main(int argc, char ** argv)
                                 SDL_Color nc;nc.r=newRed;nc.g=newGreen;nc.b=newBlue;
 
 
-    //                            floodFill4(mouseX,mouseY,mainwindowPixels,red,green,blue, newRed,newGreen,newBlue);
+                                //STACK OVERFLOW RECURSING ON A BIG WINDOW
+//                                floodFill4(mouseX,mouseY,mainwindowPixels,red,green,blue, newRed,newGreen,newBlue);
                                 floodfill(mouseX,mouseY,mainwindowPixels, c.r,c.g,c.b, nc.r,nc.g,nc.b);
 
                             }
