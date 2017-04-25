@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
-<!-- Written by QtCreator 4.0.2, 2017-04-25T11:03:39. -->
+<!-- Written by QtCreator 4.0.2, 2017-04-25T11:58:54. -->
 <qtcreator>
  <data>
   <variable>EnvironmentId</variable>
@@ -311,7 +311,7 @@
     <value type="bool" key="Qt4ProjectManager.Qt4RunConfiguration.UseDyldImageSuffix">false</value>
     <value type="bool" key="Qt4ProjectManager.Qt4RunConfiguration.UseTerminal">false</value>
     <value type="QString" key="Qt4ProjectManager.Qt4RunConfiguration.UserWorkingDirectory"></value>
-    <value type="QString" key="Qt4ProjectManager.Qt4RunConfiguration.UserWorkingDirectory.default">/home/yioannidis/Downloads/c/Eike_C/assignment2016/ASSIGNMENTHELP_PassProtectedProjects/Playing_With_Textures_Drawing_On_Screen_SDL2_-master/QTTest40_texture_manipulation</value>
+    <value type="QString" key="Qt4ProjectManager.Qt4RunConfiguration.UserWorkingDirectory.default">/home/yioannidis/Downloads/c/Eike_C/assignment2016/SDL2_Playing_With_Textures_Drawing_On_Screen/QTTest40_texture_manipulation</value>
     <value type="uint" key="RunConfiguration.QmlDebugServerPort">3768</value>
     <value type="bool" key="RunConfiguration.UseCppDebugger">false</value>
     <value type="bool" key="RunConfiguration.UseCppDebuggerAuto">true</value>
